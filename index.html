@@ -14,7 +14,7 @@
   <div id="root"></div>
   
   <script type="text/babel">
-    import React, { useState, useEffect } from 'react';
+  import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, User, FileText, Send, Check, X, Plus, Edit, ArrowLeft, Download } from 'lucide-react';
 
 // Helpers dla storage
@@ -129,8 +129,8 @@ const generateDispatchXML = (dispatch, event) => {
 </newsItem>`;
 };
 
-//Główny komponent
-  const SyrenkaCMS = () => {
+// Główny komponent
+const SyrenkaCMS = () => {
   const [view, setView] = useState('edytor'); // 'edytor' lub 'dziennikarz'
   const [events, setEvents] = useState([]);
   const [dispatches, setDispatches] = useState([]);
@@ -216,7 +216,7 @@ const generateDispatchXML = (dispatch, event) => {
 };
 
 // Panel Edytora
-  const EditorView = ({ events, dispatches, saveEvents, saveDispatches, downloadXML }) => {
+const EditorView = ({ events, dispatches, saveEvents, saveDispatches, downloadXML }) => {
   const [screen, setScreen] = useState('list'); // 'list', 'createEvent', 'editEvent', 'reviewDispatches'
   const [currentEvent, setCurrentEvent] = useState(null);
 
@@ -1058,7 +1058,9 @@ const JournalistView = ({ events, dispatches, saveDispatches, downloadXML }) => 
     </div>
   );
 };
-    
+
+export default SyrenkaCMS;  
+  
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<SyrenkaCMS />);
   </script>
