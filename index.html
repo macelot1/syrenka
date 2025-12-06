@@ -103,6 +103,48 @@
     // Helpers dla storage
     const storageKey = (key) => `syrenka_${key}`;
 
+import { useState, useEffect } from 'react';
+
+export const useStorage = () => {
+  const [events, setEvents] = useState([]);
+  const [dispatches, setDispatches] = useState([]);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  // Ładuj dane z localStorage
+  const loadData = async () => {
+    const eventsData = JSON.parse(localStorage.getItem('syrenka_events')) || [];
+    const dispatchesData = JSON.parse(localStorage.getItem('syrenka_dispatches')) || [];
+    setEvents(eventsData);
+    setDispatches(dispatchesData);
+  };
+
+  // Zapisuj dane do localStorage
+  const saveToStorage = async (key, data) => {
+    try {
+      localStorage.setItem(`syrenka_${key}`, JSON.stringify(data));
+    } catch (error) {
+      console.error('Błąd zapisu:', error);
+    }
+  };
+
+  return {
+    events,
+    setEvents: async (newEvents) => {
+      setEvents(newEvents);
+      await saveToStorage('events', newEvents);
+    },
+    dispatches,
+    setDispatches: async (newDispatches) => {
+      setDispatches(newDispatches);
+      await saveToStorage('dispatches', newDispatches);
+    },
+  };
+};
+
+    
     const saveToStorage = async (key, data) => {
       try {
         await window.storage.set(storageKey(key), JSON.stringify(data));
