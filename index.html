@@ -3,44 +3,127 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>System Syrenka</title>
+  <title>System Syrenka - CMS Agencji Prasowej</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    }
+  </style>
 </head>
 <body>
   <div id="root"></div>
   
   <script type="text/babel">
-  import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, User, FileText, Send, Check, X, Plus, Edit, ArrowLeft, Download } from 'lucide-react';
+    const { useState, useEffect } = React;
+    
+    // Mock window.storage używający localStorage
+    if (!window.storage) {
+      window.storage = {
+        async get(key) {
+          try {
+            const data = localStorage.getItem(key);
+            return data ? { key, value: data } : null;
+          } catch (error) {
+            console.error('Błąd odczytu:', error);
+            return null;
+          }
+        },
+        async set(key, value) {
+          try {
+            localStorage.setItem(key, value);
+            return { key, value };
+          } catch (error) {
+            console.error('Błąd zapisu:', error);
+            return null;
+          }
+        },
+        async delete(key) {
+          try {
+            localStorage.removeItem(key);
+            return { key, deleted: true };
+          } catch (error) {
+            console.error('Błąd usuwania:', error);
+            return null;
+          }
+        }
+      };
+    }
 
-// Helpers dla storage
-const storageKey = (key) => `syrenka_${key}`;
+    // Import ikon Lucide
+    const Calendar = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+    );
+    
+    const Clock = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    );
+    
+    const User = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    );
+    
+    const FileText = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+    );
+    
+    const Send = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    );
+    
+    const Check = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    );
+    
+    const X = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+    );
+    
+    const Plus = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+    );
+    
+    const Edit = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+    );
+    
+    const ArrowLeft = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" x2="5" y1="12" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    );
+    
+    const Download = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+    );
 
-const saveToStorage = async (key, data) => {
-  try {
-    await window.storage.set(storageKey(key), JSON.stringify(data));
-  } catch (error) {
-    console.error('Błąd zapisu:', error);
-  }
-};
+    // Helpers dla storage
+    const storageKey = (key) => `syrenka_${key}`;
 
-const loadFromStorage = async (key) => {
-  try {
-    const result = await window.storage.get(storageKey(key));
-    return result ? JSON.parse(result.value) : null;
-  } catch (error) {
-    return null;
-  }
-};
+    const saveToStorage = async (key, data) => {
+      try {
+        await window.storage.set(storageKey(key), JSON.stringify(data));
+      } catch (error) {
+        console.error('Błąd zapisu:', error);
+      }
+    };
 
-// Generator XML NewsML-G2
-const generateEventXML = (event) => {
-  const timestamp = new Date().toISOString();
-  return `<?xml version="1.0" encoding="UTF-8"?>
+    const loadFromStorage = async (key) => {
+      try {
+        const result = await window.storage.get(storageKey(key));
+        return result ? JSON.parse(result.value) : null;
+      } catch (error) {
+        return null;
+      }
+    };
+
+    // Generator XML NewsML-G2
+    const generateEventXML = (event) => {
+      const timestamp = new Date().toISOString();
+      return `<?xml version="1.0" encoding="UTF-8"?>
 <newsItem xmlns="http://iptc.org/std/nar/2006-10-01/" 
           guid="urn:newsml:syrenka.pl:event:${event.id}"
           version="1"
@@ -82,11 +165,11 @@ const generateEventXML = (event) => {
     </inlineXML>
   </contentSet>
 </newsItem>`;
-};
+    };
 
-const generateDispatchXML = (dispatch, event) => {
-  const timestamp = new Date().toISOString();
-  return `<?xml version="1.0" encoding="UTF-8"?>
+    const generateDispatchXML = (dispatch, event) => {
+      const timestamp = new Date().toISOString();
+      return `<?xml version="1.0" encoding="UTF-8"?>
 <newsItem xmlns="http://iptc.org/std/nar/2006-10-01/" 
           guid="urn:newsml:syrenka.pl:dispatch:${dispatch.id}"
           version="1"
@@ -109,7 +192,7 @@ const generateDispatchXML = (dispatch, event) => {
     <contentModified>${dispatch.modifiedAt || timestamp}</contentModified>
     <creator literal="${dispatch.author || dispatch.assignedTo}"/>
     ${dispatch.editor ? `<contributor role="editor" literal="${dispatch.editor}"/>` : ''}
-    <located literal="${event?.place || dispatch.place}"/>
+    <located literal="${event?.place || dispatch.place || ''}"/>
     ${(dispatch.keywords || event?.keywords || []).map(k => `<keyword>${k}</keyword>`).join('\n    ')}
     ${(dispatch.topics || event?.topics || []).map(t => `<subject type="cpnat:abstract"><name>${t}</name></subject>`).join('\n    ')}
     <headline>${dispatch.title || 'Bez tytułu'}</headline>
@@ -127,940 +210,927 @@ const generateDispatchXML = (dispatch, event) => {
     </inlineXML>
   </contentSet>
 </newsItem>`;
-};
-
-// Główny komponent
-const SyrenkaCMS = () => {
-  const [view, setView] = useState('edytor'); // 'edytor' lub 'dziennikarz'
-  const [events, setEvents] = useState([]);
-  const [dispatches, setDispatches] = useState([]);
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    const eventsData = await loadFromStorage('events');
-    const dispatchesData = await loadFromStorage('dispatches');
-    if (eventsData) setEvents(eventsData);
-    if (dispatchesData) setDispatches(dispatchesData);
-  };
-
-  const saveEvents = async (newEvents) => {
-    setEvents(newEvents);
-    await saveToStorage('events', newEvents);
-  };
-
-  const saveDispatches = async (newDispatches) => {
-    setDispatches(newDispatches);
-    await saveToStorage('dispatches', newDispatches);
-  };
-
-  const downloadXML = (filename, content) => {
-    const blob = new Blob([content], { type: 'application/xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-blue-600 text-white p-4 shadow-lg">
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold">System Syrenka</h1>
-            <span className="text-blue-200 text-sm">CMS Agencji Prasowej</span>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setView('edytor')}
-              className={`px-4 py-2 rounded ${view === 'edytor' ? 'bg-white text-blue-600' : 'bg-blue-500'}`}
-            >
-              Panel Edytora
-            </button>
-            <button
-              onClick={() => setView('dziennikarz')}
-              className={`px-4 py-2 rounded ${view === 'dziennikarz' ? 'bg-white text-blue-600' : 'bg-blue-500'}`}
-            >
-              Panel Dziennikarza
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Content */}
-      <div className="container mx-auto p-6">
-        {view === 'edytor' ? (
-          <EditorView 
-            events={events} 
-            dispatches={dispatches}
-            saveEvents={saveEvents}
-            saveDispatches={saveDispatches}
-            downloadXML={downloadXML}
-          />
-        ) : (
-          <JournalistView 
-            events={events}
-            dispatches={dispatches}
-            saveDispatches={saveDispatches}
-            downloadXML={downloadXML}
-          />
-        )}
-      </div>
-    </div>
-  );
-};
-
-// Panel Edytora
-const EditorView = ({ events, dispatches, saveEvents, saveDispatches, downloadXML }) => {
-  const [screen, setScreen] = useState('list'); // 'list', 'createEvent', 'editEvent', 'reviewDispatches'
-  const [currentEvent, setCurrentEvent] = useState(null);
-
-  const createNewEvent = () => {
-    setCurrentEvent({
-      id: `EVT${Date.now()}`,
-      title: '',
-      description: '',
-      keywords: [],
-      topics: [],
-      dateTime: '',
-      place: '',
-      services: [],
-      visibleToClient: true,
-      dispatches: []
-    });
-    setScreen('createEvent');
-  };
-
-  const editEvent = (event) => {
-    setCurrentEvent({...event});
-    setScreen('editEvent');
-  };
-
-  const saveEvent = async (event) => {
-    const newEvents = events.find(e => e.id === event.id)
-      ? events.map(e => e.id === event.id ? event : e)
-      : [...events, event];
-    
-    await saveEvents(newEvents);
-    
-    // Generuj XML dla wydarzenia
-    const xml = generateEventXML(event);
-    downloadXML(`wydarzenie_${event.id}.xml`, xml);
-    
-    setScreen('list');
-    setCurrentEvent(null);
-  };
-
-  const pendingDispatches = dispatches.filter(d => d.status === 'Wysłana do Edytora');
-
-  if (screen === 'createEvent' || screen === 'editEvent') {
-    return (
-      <EventForm 
-        event={currentEvent}
-        onSave={saveEvent}
-        onCancel={() => {
-          setScreen('list');
-          setCurrentEvent(null);
-        }}
-      />
-    );
-  }
-
-  if (screen === 'reviewDispatches') {
-    return (
-      <DispatchReview
-        dispatches={pendingDispatches}
-        events={events}
-        onUpdate={saveDispatches}
-        onBack={() => setScreen('list')}
-        downloadXML={downloadXML}
-      />
-    );
-  }
-
-  return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-gray-800">Wydarzenia</h2>
-        <div className="flex gap-3">
-          {pendingDispatches.length > 0 && (
-            <button
-              onClick={() => setScreen('reviewDispatches')}
-              className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-2"
-            >
-              <FileText className="w-5 h-5" />
-              Depesze do weryfikacji ({pendingDispatches.length})
-            </button>
-          )}
-          <button
-            onClick={createNewEvent}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            Nowe wydarzenie
-          </button>
-        </div>
-      </div>
-
-      {events.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
-          <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
-          <p>Brak wydarzeń. Utwórz pierwsze wydarzenie.</p>
-        </div>
-      ) : (
-        <div className="grid gap-4">
-          {events.map(event => (
-            <EventCard key={event.id} event={event} onEdit={editEvent} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Formularz wydarzenia
-const EventForm = ({ event, onSave, onCancel }) => {
-  const [formData, setFormData] = useState(event);
-
-  const keywordOptions = ['Keyword1', 'Keyword2', 'Keyword3'];
-  const topicOptions = ['Temat1', 'Temat2', 'Temat3'];
-  const placeOptions = ['Miejsce1', 'Miejsce2', 'Miejsce3'];
-  const serviceOptions = ['Serwis1', 'Serwis2', 'Serwis3'];
-  const journalistOptions = ['Dziennikarz1', 'Dziennikarz2', 'Dziennikarz3'];
-  const dispatchTypes = ['Pilna', 'Krótka', 'Opis', 'Background'];
-
-  const addDispatch = () => {
-    const newDispatch = {
-      id: `DIS${Date.now()}`,
-      type: 'Krótka',
-      publishTime: '',
-      assignedTo: '',
-      status: 'Draft',
-      eventId: formData.id
     };
-    setFormData({
-      ...formData,
-      dispatches: [...formData.dispatches, newDispatch]
-    });
-  };
 
-  const updateDispatch = (index, field, value) => {
-    const newDispatches = [...formData.dispatches];
-    newDispatches[index][field] = value;
-    setFormData({ ...formData, dispatches: newDispatches });
-  };
+    // Główny komponent
+    const SyrenkaCMS = () => {
+      const [view, setView] = useState('edytor');
+      const [events, setEvents] = useState([]);
+      const [dispatches, setDispatches] = useState([]);
 
-  const removeDispatch = (index) => {
-    setFormData({
-      ...formData,
-      dispatches: formData.dispatches.filter((_, i) => i !== index)
-    });
-  };
+      useEffect(() => {
+        loadData();
+      }, []);
 
-  const toggleMultiSelect = (field, value) => {
-    const current = formData[field];
-    const newValue = current.includes(value)
-      ? current.filter(v => v !== value)
-      : [...current, value];
-    setFormData({ ...formData, [field]: newValue });
-  };
+      const loadData = async () => {
+        const eventsData = await loadFromStorage('events');
+        const dispatchesData = await loadFromStorage('dispatches');
+        if (eventsData) setEvents(eventsData);
+        if (dispatchesData) setDispatches(dispatchesData);
+      };
 
-  return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <button onClick={onCancel} className="text-gray-600 hover:text-gray-800">
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <h2 className="text-2xl font-bold">
-          {event.title ? 'Edycja wydarzenia' : 'Nowe wydarzenie'}
-        </h2>
-      </div>
+      const saveEvents = async (newEvents) => {
+        setEvents(newEvents);
+        await saveToStorage('events', newEvents);
+      };
 
-      <div className="space-y-4">
-        {/* Podstawowe informacje */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Tytuł wydarzenia</label>
-          <input
-            type="text"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            placeholder="Wprowadź tytuł..."
-          />
-        </div>
+      const saveDispatches = async (newDispatches) => {
+        setDispatches(newDispatches);
+        await saveToStorage('dispatches', newDispatches);
+      };
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Opis</label>
-          <textarea
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            rows="3"
-            placeholder="Opis wydarzenia..."
-          />
-        </div>
+      const downloadXML = (filename, content) => {
+        const blob = new Blob([content], { type: 'application/xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      };
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Data i godzina</label>
-            <input
-              type="datetime-local"
-              value={formData.dateTime}
-              onChange={(e) => setFormData({ ...formData, dateTime: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Miejsce</label>
-            <select
-              value={formData.place}
-              onChange={(e) => setFormData({ ...formData, place: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            >
-              <option value="">Wybierz miejsce...</option>
-              {placeOptions.map(p => <option key={p} value={p}>{p}</option>)}
-            </select>
-          </div>
-        </div>
-
-        {/* Multi-select */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Słowa kluczowe</label>
-          <div className="flex gap-2 flex-wrap">
-            {keywordOptions.map(kw => (
-              <button
-                key={kw}
-                onClick={() => toggleMultiSelect('keywords', kw)}
-                className={`px-3 py-1 rounded-full text-sm ${
-                  formData.keywords.includes(kw)
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-700'
-                }`}
-              >
-                {kw}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Tematy</label>
-          <div className="flex gap-2 flex-wrap">
-            {topicOptions.map(t => (
-              <button
-                key={t}
-                onClick={() => toggleMultiSelect('topics', t)}
-                className={`px-3 py-1 rounded-full text-sm ${
-                  formData.topics.includes(t)
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-200 text-gray-700'
-                }`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Serwisy</label>
-          <div className="flex gap-2 flex-wrap">
-            {serviceOptions.map(s => (
-              <button
-                key={s}
-                onClick={() => toggleMultiSelect('services', s)}
-                className={`px-3 py-1 rounded-full text-sm ${
-                  formData.services.includes(s)
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-gray-200 text-gray-700'
-                }`}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={formData.visibleToClient}
-              onChange={(e) => setFormData({ ...formData, visibleToClient: e.target.checked })}
-              className="w-4 h-4"
-            />
-            <span className="text-sm font-medium text-gray-700">Widoczne dla klienta</span>
-          </label>
-        </div>
-
-        {/* Planowane depesze */}
-        <div className="border-t pt-4 mt-6">
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-lg font-semibold">Planowane depesze</h3>
-            <button
-              onClick={addDispatch}
-              className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 flex items-center gap-1 text-sm"
-            >
-              <Plus className="w-4 h-4" />
-              Dodaj depeszę
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            {formData.dispatches.map((dispatch, index) => (
-              <div key={dispatch.id} className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                <div className="grid grid-cols-4 gap-3">
-                  <div>
-                    <label className="block text-xs text-gray-600 mb-1">Typ</label>
-                    <select
-                      value={dispatch.type}
-                      onChange={(e) => updateDispatch(index, 'type', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
-                    >
-                      {dispatchTypes.map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-600 mb-1">Czas publikacji</label>
-                    <input
-                      type="datetime-local"
-                      value={dispatch.publishTime}
-                      onChange={(e) => updateDispatch(index, 'publishTime', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-600 mb-1">Dziennikarz</label>
-                    <select
-                      value={dispatch.assignedTo}
-                      onChange={(e) => updateDispatch(index, 'assignedTo', e.target.value)}
-                      className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
-                    >
-                      <option value="">Nieprzypisany</option>
-                      {journalistOptions.map(j => <option key={j} value={j}>{j}</option>)}
-                    </select>
-                  </div>
-                  <div className="flex items-end">
-                    <button
-                      onClick={() => removeDispatch(index)}
-                      className="text-red-600 hover:text-red-800 p-1"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
+      return (
+        <div className="min-h-screen bg-gray-50">
+          <nav className="bg-blue-600 text-white p-4 shadow-lg">
+            <div className="container mx-auto flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <h1 className="text-2xl font-bold">System Syrenka</h1>
+                <span className="text-blue-200 text-sm">CMS Agencji Prasowej</span>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Przyciski akcji */}
-        <div className="flex gap-3 pt-4">
-          <button
-            onClick={() => onSave(formData)}
-            disabled={!formData.title || !formData.dateTime}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-          >
-            Zapisz wydarzenie
-          </button>
-          <button
-            onClick={onCancel}
-            className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400"
-          >
-            Anuluj
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Karta wydarzenia
-const EventCard = ({ event, onEdit }) => {
-  return (
-    <div className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-start mb-3">
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800">{event.title}</h3>
-          <p className="text-gray-600 text-sm mt-1">{event.description}</p>
-        </div>
-        <button
-          onClick={() => onEdit(event)}
-          className="text-blue-600 hover:text-blue-800 p-2"
-        >
-          <Edit className="w-5 h-5" />
-        </button>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 text-sm mb-3">
-        <div className="flex items-center gap-2 text-gray-600">
-          <Calendar className="w-4 h-4" />
-          {new Date(event.dateTime).toLocaleString('pl-PL')}
-        </div>
-        <div className="flex items-center gap-2 text-gray-600">
-          <FileText className="w-4 h-4" />
-          {event.dispatches.length} depesz
-        </div>
-      </div>
-
-      <div className="flex gap-2 flex-wrap">
-        {event.topics.map(t => (
-          <span key={t} className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-            {t}
-          </span>
-        ))}
-      </div>
-
-      {event.dispatches.length > 0 && (
-        <div className="mt-3 pt-3 border-t">
-          <p className="text-xs text-gray-500 mb-2">Planowane depesze:</p>
-          <div className="space-y-1">
-            {event.dispatches.map(d => (
-              <div key={d.id} className="text-sm flex items-center justify-between bg-gray-50 p-2 rounded">
-                <span className="font-medium">{d.type}</span>
-                <span className="text-gray-600">{d.assignedTo || 'Nieprzypisany'}</span>
-                <span className={`text-xs px-2 py-1 rounded ${
-                  d.status === 'Draft' ? 'bg-gray-200' :
-                  d.status === 'Wysłana do Edytora' ? 'bg-orange-200' :
-                  d.status === 'Zatwierdzona' ? 'bg-green-200' : 'bg-yellow-200'
-                }`}>
-                  {d.status}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Panel weryfikacji depesz
-const DispatchReview = ({ dispatches, events, onUpdate, onBack, downloadXML }) => {
-  const [selectedDispatch, setSelectedDispatch] = useState(null);
-  const [editedContent, setEditedContent] = useState('');
-  const [editedMetadata, setEditedMetadata] = useState({});
-
-  const handleReview = (dispatch) => {
-    setSelectedDispatch(dispatch);
-    setEditedContent(dispatch.content || '');
-    setEditedMetadata({
-      keywords: dispatch.keywords || [],
-      topics: dispatch.topics || [],
-      place: dispatch.place || ''
-    });
-  };
-
-  const approveDispatch = async (allDispatches) => {
-    const updated = allDispatches.map(d => 
-      d.id === selectedDispatch.id
-        ? { 
-            ...d, 
-            status: 'Zatwierdzona', 
-            editor: 'Edytor',
-            content: editedContent,
-            ...editedMetadata,
-            modifiedAt: new Date().toISOString()
-          }
-        : d
-    );
-    
-    await onUpdate(updated);
-    
-    // Generuj XML
-    const event = events.find(e => e.id === selectedDispatch.eventId);
-    const approvedDispatch = updated.find(d => d.id === selectedDispatch.id);
-    const xml = generateDispatchXML(approvedDispatch, event);
-    downloadXML(`depesza_${approvedDispatch.id}.xml`, xml);
-    
-    setSelectedDispatch(null);
-  };
-
-  const rejectDispatch = async (allDispatches) => {
-    const updated = allDispatches.map(d => 
-      d.id === selectedDispatch.id
-        ? { ...d, status: 'Do poprawy' }
-        : d
-    );
-    await onUpdate(updated);
-    setSelectedDispatch(null);
-  };
-
-  if (selectedDispatch) {
-    const event = events.find(e => e.id === selectedDispatch.eventId);
-    
-    return (
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <button onClick={() => setSelectedDispatch(null)} className="text-gray-600 hover:text-gray-800">
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-          <h2 className="text-2xl font-bold">Weryfikacja depeszy</h2>
-        </div>
-
-        <div className="grid grid-cols-3 gap-6">
-          <div className="col-span-2">
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold mb-2">Treść depeszy</h3>
-              <textarea
-                value={editedContent}
-                onChange={(e) => setEditedContent(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 min-h-[300px]"
-              />
-            </div>
-          </div>
-
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="font-semibold mb-3">Metadane</h3>
-            <div className="space-y-3 text-sm">
-              <div>
-                <span className="text-gray-600">Typ:</span>
-                <p className="font-medium">{selectedDispatch.type}</p>
-              </div>
-              <div>
-                <span className="text-gray-600">Wydarzenie:</span>
-                <p className="font-medium">{event?.title}</p>
-              </div>
-              <div>
-                <span className="text-gray-600">Autor:</span>
-                <p className="font-medium">{selectedDispatch.assignedTo}</p>
-              </div>
-              <div>
-                <span className="text-gray-600">Czas publikacji:</span>
-                <p className="font-medium">{new Date(selectedDispatch.publishTime).toLocaleString('pl-PL')}</p>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-4 border-t">
-              <label className="block text-sm font-medium mb-2">Miejsce</label>
-              <input
-                type="text"
-                value={editedMetadata.place}
-                onChange={(e) => setEditedMetadata({...editedMetadata, place: e.target.value})}
-                className="w-full border rounded px-2 py-1 text-sm"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-3 mt-6 pt-4 border-t">
-          <button
-            onClick={() => approveDispatch(dispatches)}
-            className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
-          >
-            <Check className="w-5 h-5" />
-            Zatwierdź i opublikuj
-          </button>
-          <button
-            onClick={() => rejectDispatch(dispatches)}
-            className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 flex items-center gap-2"
-          >
-            <X className="w-5 h-5" />
-            Odeślij do poprawy
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <div className="flex items-center gap-3 mb-6">
-        <button onClick={onBack} className="text-gray-600 hover:text-gray-800">
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <h2 className="text-2xl font-bold">Depesze do weryfikacji</h2>
-      </div>
-
-      <div className="space-y-3">
-        {dispatches.map(dispatch => {
-          const event = events.find(e => e.id === dispatch.eventId);
-          return (
-            <div key={dispatch.id} className="bg-white rounded-lg shadow p-4">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-semibold text-lg">{dispatch.type}</h3>
-                  <p className="text-sm text-gray-600">Wydarzenie: {event?.title}</p>
-                  <p className="text-sm text-gray-600">Autor: {dispatch.assignedTo}</p>
-                </div>
+              <div className="flex gap-2">
                 <button
-                  onClick={() => handleReview(dispatch)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  onClick={() => setView('edytor')}
+                  className={`px-4 py-2 rounded ${view === 'edytor' ? 'bg-white text-blue-600' : 'bg-blue-500'}`}
                 >
-                  Sprawdź
+                  Panel Edytora
+                </button>
+                <button
+                  onClick={() => setView('dziennikarz')}
+                  className={`px-4 py-2 rounded ${view === 'dziennikarz' ? 'bg-white text-blue-600' : 'bg-blue-500'}`}
+                >
+                  Panel Dziennikarza
                 </button>
               </div>
             </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
+          </nav>
 
-// Panel dziennikarza
-const JournalistView = ({ events, dispatches, saveDispatches, downloadXML }) => {
-  const [selectedDispatch, setSelectedDispatch] = useState(null);
-
-  const journalistName = 'Dziennikarz1';
-  const myDispatches = dispatches.filter(d => d.assignedTo === journalistName);
-
-  const startWriting = (dispatch) => {
-    setSelectedDispatch({
-      ...dispatch,
-      content: dispatch.content || '',
-      status: 'Draft'
-    });
-  };
-
-  const saveAndSend = async () => {
-    const updated = dispatches.map(d =>
-      d.id === selectedDispatch.id
-        ? {
-            ...selectedDispatch,
-            status: 'Wysłana do Edytora',
-            author: journalistName,
-            createdAt: selectedDispatch.createdAt || new Date().toISOString(),
-            modifiedAt: new Date().toISOString()
-          }
-        : d
-    );
-    
-    await saveDispatches(updated);
-    
-    // Generuj XML
-    const event = events.find(e => e.id === selectedDispatch.eventId);
-    const xml = generateDispatchXML({...selectedDispatch, author: journalistName}, event);
-    downloadXML(`depesza_draft_${selectedDispatch.id}.xml`, xml);
-    
-    setSelectedDispatch(null);
-  };
-
-  if (selectedDispatch) {
-    const event = events.find(e => e.id === selectedDispatch.eventId);
-    const maxLength = selectedDispatch.type === 'Pilna' ? 150 : null;
-
-    return (
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <button onClick={() => setSelectedDispatch(null)} className="text-gray-600 hover:text-gray-800">
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-          <h2 className="text-2xl font-bold">Pisanie depeszy: {selectedDispatch.type}</h2>
+          <div className="container mx-auto p-6">
+            {view === 'edytor' ? (
+              <EditorView 
+                events={events} 
+                dispatches={dispatches}
+                saveEvents={saveEvents}
+                saveDispatches={saveDispatches}
+                downloadXML={downloadXML}
+              />
+            ) : (
+              <JournalistView 
+                events={events}
+                dispatches={dispatches}
+                saveDispatches={saveDispatches}
+                downloadXML={downloadXML}
+              />
+            )}
+          </div>
         </div>
+      );
+    };
 
-        <div className="grid grid-cols-3 gap-6">
-          {/* Edytor tekstu */}
-          <div className="col-span-2">
-            <div className="mb-4">
-              {selectedDispatch.type === 'Pilna' && (
-                <div className="bg-red-50 border border-red-200 rounded p-3 mb-3 text-sm text-red-800">
-                  ⚠️ Depesza pilna - maksymalnie jedno zdanie (ok. 150 znaków)
-                </div>
+    // Panel Edytora
+    const EditorView = ({ events, dispatches, saveEvents, saveDispatches, downloadXML }) => {
+      const [screen, setScreen] = useState('list');
+      const [currentEvent, setCurrentEvent] = useState(null);
+
+      const createNewEvent = () => {
+        setCurrentEvent({
+          id: `EVT${Date.now()}`,
+          title: '',
+          description: '',
+          keywords: [],
+          topics: [],
+          dateTime: '',
+          place: '',
+          services: [],
+          visibleToClient: true,
+          dispatches: []
+        });
+        setScreen('createEvent');
+      };
+
+      const editEvent = (event) => {
+        setCurrentEvent({...event});
+        setScreen('editEvent');
+      };
+
+      const saveEvent = async (event) => {
+        const newEvents = events.find(e => e.id === event.id)
+          ? events.map(e => e.id === event.id ? event : e)
+          : [...events, event];
+        
+        await saveEvents(newEvents);
+        
+        const xml = generateEventXML(event);
+        downloadXML(`wydarzenie_${event.id}.xml`, xml);
+        
+        setScreen('list');
+        setCurrentEvent(null);
+      };
+
+      const pendingDispatches = dispatches.filter(d => d.status === 'Wysłana do Edytora');
+
+      if (screen === 'createEvent' || screen === 'editEvent') {
+        return (
+          <EventForm 
+            event={currentEvent}
+            onSave={saveEvent}
+            onCancel={() => {
+              setScreen('list');
+              setCurrentEvent(null);
+            }}
+          />
+        );
+      }
+
+      if (screen === 'reviewDispatches') {
+        return (
+          <DispatchReview
+            dispatches={pendingDispatches}
+            events={events}
+            onUpdate={saveDispatches}
+            onBack={() => setScreen('list')}
+            downloadXML={downloadXML}
+          />
+        );
+      }
+
+      return (
+        <div>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-3xl font-bold text-gray-800">Wydarzenia</h2>
+            <div className="flex gap-3">
+              {pendingDispatches.length > 0 && (
+                <button
+                  onClick={() => setScreen('reviewDispatches')}
+                  className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-2"
+                >
+                  <FileText />
+                  Depesze do weryfikacji ({pendingDispatches.length})
+                </button>
               )}
-              
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Treść depeszy
-                {maxLength && (
-                  <span className={`ml-2 ${selectedDispatch.content.length > maxLength ? 'text-red-600' : 'text-gray-500'}`}>
-                    ({selectedDispatch.content.length}/{maxLength})
-                  </span>
-                )}
-              </label>
-              <textarea
-                value={selectedDispatch.content}
-                onChange={(e) => setSelectedDispatch({...selectedDispatch, content: e.target.value})}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 min-h-[400px]"
-                placeholder="Zacznij pisać..."
+              <button
+                onClick={createNewEvent}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+              >
+                <Plus />
+                Nowe wydarzenie
+              </button>
+            </div>
+          </div>
+
+          {events.length === 0 ? (
+            <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+              <div className="flex justify-center mb-4"><Calendar /></div>
+              <p>Brak wydarzeń. Utwórz pierwsze wydarzenie.</p>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {events.map(event => (
+                <EventCard key={event.id} event={event} onEdit={editEvent} />
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // Formularz wydarzenia
+    const EventForm = ({ event, onSave, onCancel }) => {
+      const [formData, setFormData] = useState(event);
+
+      const keywordOptions = ['Keyword1', 'Keyword2', 'Keyword3'];
+      const topicOptions = ['Temat1', 'Temat2', 'Temat3'];
+      const placeOptions = ['Miejsce1', 'Miejsce2', 'Miejsce3'];
+      const serviceOptions = ['Serwis1', 'Serwis2', 'Serwis3'];
+      const journalistOptions = ['Dziennikarz1', 'Dziennikarz2', 'Dziennikarz3'];
+      const dispatchTypes = ['Pilna', 'Krótka', 'Opis', 'Background'];
+
+      const addDispatch = () => {
+        const newDispatch = {
+          id: `DIS${Date.now()}`,
+          type: 'Krótka',
+          publishTime: '',
+          assignedTo: '',
+          status: 'Draft',
+          eventId: formData.id
+        };
+        setFormData({
+          ...formData,
+          dispatches: [...formData.dispatches, newDispatch]
+        });
+      };
+
+      const updateDispatch = (index, field, value) => {
+        const newDispatches = [...formData.dispatches];
+        newDispatches[index][field] = value;
+        setFormData({ ...formData, dispatches: newDispatches });
+      };
+
+      const removeDispatch = (index) => {
+        setFormData({
+          ...formData,
+          dispatches: formData.dispatches.filter((_, i) => i !== index)
+        });
+      };
+
+      const toggleMultiSelect = (field, value) => {
+        const current = formData[field];
+        const newValue = current.includes(value)
+          ? current.filter(v => v !== value)
+          : [...current, value];
+        setFormData({ ...formData, [field]: newValue });
+      };
+
+      return (
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <button onClick={onCancel} className="text-gray-600 hover:text-gray-800">
+              <ArrowLeft />
+            </button>
+            <h2 className="text-2xl font-bold">
+              {event.title ? 'Edycja wydarzenia' : 'Nowe wydarzenie'}
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tytuł wydarzenia</label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="Wprowadź tytuł..."
               />
             </div>
 
-            {selectedDispatch.type === 'Krótka' && (
-              <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm">
-                <p className="font-medium mb-2">Opcje dla depeszy krótkiej:</p>
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" className="w-4 h-4" />
-                  <span>Dodaj depeszę pilną do tytułu</span>
-                </label>
-              </div>
-            )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Opis</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                rows="3"
+                placeholder="Opis wydarzenia..."
+              />
+            </div>
 
-            {selectedDispatch.type === 'Opis' && (
-              <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm">
-                <p className="font-medium mb-2">Opcje dla depeszy opisu:</p>
-                <label className="flex items-center gap-2 mb-2">
-                  <input type="checkbox" className="w-4 h-4" />
-                  <span>Dodaj depeszę krótką</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" className="w-4 h-4" />
-                  <span>Dodaj background</span>
-                </label>
-              </div>
-            )}
-          </div>
-
-          {/* Panel boczny z metadanymi */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="font-semibold mb-4">Informacje</h3>
-            
-            <div className="space-y-3 text-sm">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <span className="text-gray-600 block mb-1">Wydarzenie:</span>
-                <p className="font-medium bg-white p-2 rounded border">{event?.title}</p>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Data i godzina</label>
+                <input
+                  type="datetime-local"
+                  value={formData.dateTime}
+                  onChange={(e) => setFormData({ ...formData, dateTime: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                />
               </div>
 
               <div>
-                <span className="text-gray-600 block mb-1">Typ depeszy:</span>
-                <p className="font-medium">{selectedDispatch.type}</p>
-              </div>
-
-              <div>
-                <span className="text-gray-600 block mb-1">Planowana publikacja:</span>
-                <div className="flex items-center gap-2 text-gray-700">
-                  <Clock className="w-4 h-4" />
-                  {new Date(selectedDispatch.publishTime).toLocaleString('pl-PL')}
-                </div>
-              </div>
-
-              <div>
-                <span className="text-gray-600 block mb-1">Miejsce:</span>
-                <p className="font-medium">{event?.place}</p>
-              </div>
-
-              <div>
-                <span className="text-gray-600 block mb-1">Tematy:</span>
-                <div className="flex flex-wrap gap-1">
-                  {event?.topics.map(t => (
-                    <span key={t} className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <span className="text-gray-600 block mb-1">Słowa kluczowe:</span>
-                <div className="flex flex-wrap gap-1">
-                  {event?.keywords.map(k => (
-                    <span key={k} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                      {k}
-                    </span>
-                  ))}
-                </div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Miejsce</label>
+                <select
+                  value={formData.place}
+                  onChange={(e) => setFormData({ ...formData, place: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                >
+                  <option value="">Wybierz miejsce...</option>
+                  {placeOptions.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="flex gap-3 mt-6 pt-4 border-t">
-          <button
-            onClick={saveAndSend}
-            disabled={!selectedDispatch.content.trim() || (maxLength && selectedDispatch.content.length > maxLength)}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            <Send className="w-5 h-5" />
-            Wyślij do edytora
-          </button>
-          <button
-            onClick={() => setSelectedDispatch(null)}
-            className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400"
-          >
-            Zapisz roboczo
-          </button>
-        </div>
-      </div>
-    );
-  }
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Słowa kluczowe</label>
+              <div className="flex gap-2 flex-wrap">
+                {keywordOptions.map(kw => (
+                  <button
+                    key={kw}
+                    onClick={() => toggleMultiSelect('keywords', kw)}
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      formData.keywords.includes(kw)
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 text-gray-700'
+                    }`}
+                  >
+                    {kw}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-  // Lista zadań dziennikarza
-  const eventGroups = {};
-  myDispatches.forEach(dispatch => {
-    const event = events.find(e => e.id === dispatch.eventId);
-    if (event) {
-      if (!eventGroups[event.id]) {
-        eventGroups[event.id] = { event, dispatches: [] };
-      }
-      eventGroups[event.id].dispatches.push(dispatch);
-    }
-  });
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tematy</label>
+              <div className="flex gap-2 flex-wrap">
+                {topicOptions.map(t => (
+                  <button
+                    key={t}
+                    onClick={() => toggleMultiSelect('topics', t)}
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      formData.topics.includes(t)
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-200 text-gray-700'
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-  return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Moje zadania</h2>
-        <div className="flex items-center gap-2 text-gray-600">
-          <User className="w-5 h-5" />
-          <span>Zalogowano jako: <strong>{journalistName}</strong></span>
-        </div>
-      </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Serwisy</label>
+              <div className="flex gap-2 flex-wrap">
+                {serviceOptions.map(s => (
+                  <button
+                    key={s}
+                    onClick={() => toggleMultiSelect('services', s)}
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      formData.services.includes(s)
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-gray-200 text-gray-700'
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-      {Object.keys(eventGroups).length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
-          <FileText className="w-16 h-16 mx-auto mb-4 opacity-50" />
-          <p>Brak przypisanych zadań.</p>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {Object.values(eventGroups).map(({ event, dispatches }) => (
-            <div key={event.id} className="bg-white rounded-lg shadow p-5">
-              <div className="mb-4">
-                <h3 className="text-xl font-semibold text-gray-800">{event.title}</h3>
-                <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                  <Calendar className="w-4 h-4" />
-                  {new Date(event.dateTime).toLocaleString('pl-PL')}
-                </div>
+            <div>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData.visibleToClient}
+                  onChange={(e) => setFormData({ ...formData, visibleToClient: e.target.checked })}
+                  className="w-4 h-4"
+                />
+                <span className="text-sm font-medium text-gray-700">Widoczne dla klienta</span>
+              </label>
+            </div>
+
+            <div className="border-t pt-4 mt-6">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-lg font-semibold">Planowane depesze</h3>
+                <button
+                  onClick={addDispatch}
+                  className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 flex items-center gap-1 text-sm"
+                >
+                  <Plus />
+                  Dodaj depeszę
+                </button>
               </div>
 
-              <div className="space-y-2">
-                {dispatches.map(dispatch => (
-                  <div key={dispatch.id} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg border">
-                    <div className="flex items-center gap-3">
-                      <FileText className="w-5 h-5 text-gray-600" />
+              <div className="space-y-3">
+                {formData.dispatches.map((dispatch, index) => (
+                  <div key={dispatch.id} className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                    <div className="grid grid-cols-4 gap-3">
                       <div>
-                        <p className="font-medium">{dispatch.type}</p>
-                        <p className="text-xs text-gray-600">
-                          Publikacja: {new Date(dispatch.publishTime).toLocaleString('pl-PL')}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`text-xs px-3 py-1 rounded-full ${
-                        dispatch.status === 'Draft' ? 'bg-gray-200 text-gray-700' :
-                        dispatch.status === 'Wysłana do Edytora' ? 'bg-orange-200 text-orange-800' :
-                        dispatch.status === 'Zatwierdzona' ? 'bg-green-200 text-green-800' :
-                        'bg-yellow-200 text-yellow-800'
-                      }`}>
-                        {dispatch.status}
-                      </span>
-                      {dispatch.status !== 'Zatwierdzona' && (
-                        <button
-                          onClick={() => startWriting(dispatch)}
-                          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
+                        <label className="block text-xs text-gray-600 mb-1">Typ</label>
+                        <select
+                          value={dispatch.type}
+                          onChange={(e) => updateDispatch(index, 'type', e.target.value)}
+                          className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
                         >
-                          {dispatch.status === 'Draft' ? 'Kontynuuj' : 'Rozpocznij'}
+                          {dispatchTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Czas publikacji</label>
+                        <input
+                          type="datetime-local"
+                          value={dispatch.publishTime}
+                          onChange={(e) => updateDispatch(index, 'publishTime', e.target.value)}
+                          className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Dziennikarz</label>
+                        <select
+                          value={dispatch.assignedTo}
+                          onChange={(e) => updateDispatch(index, 'assignedTo', e.target.value)}
+                          className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+                        >
+                          <option value="">Nieprzypisany</option>
+                          {journalistOptions.map(j => <option key={j} value={j}>{j}</option>)}
+                        </select>
+                      </div>
+                      <div className="flex items-end">
+                        <button
+                          onClick={() => removeDispatch(index)}
+                          className="text-red-600 hover:text-red-800 p-1"
+                        >
+                          <X />
                         </button>
-                      )}
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
 
-export default SyrenkaCMS;  
-  
+            <div className="flex gap-3 pt-4">
+              <button
+                onClick={() => onSave(formData)}
+                disabled={!formData.title || !formData.dateTime}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                Zapisz wydarzenie
+              </button>
+              <button
+                onClick={onCancel}
+                className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400"
+              >
+                Anuluj
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Karta wydarzenia
+    const EventCard = ({ event, onEdit }) => {
+      return (
+        <div className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800">{event.title}</h3>
+              <p className="text-gray-600 text-sm mt-1">{event.description}</p>
+            </div>
+            <button
+              onClick={() => onEdit(event)}
+              className="text-blue-600 hover:text-blue-800 p-2"
+            >
+              <Edit />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 text-sm mb-3">
+            <div className="flex items-center gap-2 text-gray-600">
+              <Calendar />
+              {new Date(event.dateTime).toLocaleString('pl-PL')}
+            </div>
+            <div className="flex items-center gap-2 text-gray-600">
+              <FileText />
+              {event.dispatches.length} depesz
+            </div>
+          </div>
+
+          <div className="flex gap-2 flex-wrap">
+            {event.topics.map(t => (
+              <span key={t} className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                {t}
+              </span>
+            ))}
+          </div>
+
+          {event.dispatches.length > 0 && (
+            <div className="mt-3 pt-3 border-t">
+              <p className="text-xs text-gray-500 mb-2">Planowane depesze:</p>
+              <div className="space-y-1">
+                {event.dispatches.map(d => (
+                  <div key={d.id} className="text-sm flex items-center justify-between bg-gray-50 p-2 rounded">
+                    <span className="font-medium">{d.type}</span>
+                    <span className="text-gray-600">{d.assignedTo || 'Nieprzypisany'}</span>
+                    <span className={`text-xs px-2 py-1 rounded ${
+                      d.status === 'Draft' ? 'bg-gray-200' :
+                      d.status === 'Wysłana do Edytora' ? 'bg-orange-200' :
+                      d.status === 'Zatwierdzona' ? 'bg-green-200' : 'bg-yellow-200'
+                    }`}>
+                      {d.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // Panel weryfikacji depesz
+    const DispatchReview = ({ dispatches, events, onUpdate, onBack, downloadXML }) => {
+      const [selectedDispatch, setSelectedDispatch] = useState(null);
+      const [editedContent, setEditedContent] = useState('');
+      const [editedMetadata, setEditedMetadata] = useState({});
+
+      const handleReview = (dispatch) => {
+        setSelectedDispatch(dispatch);
+        setEditedContent(dispatch.content || '');
+        setEditedMetadata({
+          keywords: dispatch.keywords || [],
+          topics: dispatch.topics || [],
+          place: dispatch.place || ''
+        });
+      };
+
+      const approveDispatch = async (allDispatches) => {
+        const updated = allDispatches.map(d => 
+          d.id === selectedDispatch.id
+            ? { 
+                ...d, 
+                status: 'Zatwierdzona', 
+                editor: 'Edytor',
+                content: editedContent,
+                ...editedMetadata,
+                modifiedAt: new Date().toISOString()
+              }
+            : d
+        );
+        
+        await onUpdate(updated);
+        
+        const event = events.find(e => e.id === selectedDispatch.eventId);
+        const approvedDispatch = updated.find(d => d.id === selectedDispatch.id);
+        const xml = generateDispatchXML(approvedDispatch, event);
+        downloadXML(`depesza_${approvedDispatch.id}.xml`, xml);
+        
+        setSelectedDispatch(null);
+      };
+
+      const rejectDispatch = async (allDispatches) => {
+        const updated = allDispatches.map(d => 
+          d.id === selectedDispatch.id
+            ? { ...d, status: 'Do poprawy' }
+            : d
+        );
+        await onUpdate(updated);
+        setSelectedDispatch(null);
+      };
+
+      if (selectedDispatch) {
+        const event = events.find(e => e.id === selectedDispatch.eventId);
+        
+        return (
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <button onClick={() => setSelectedDispatch(null)} className="text-gray-600 hover:text-gray-800">
+                <ArrowLeft />
+              </button>
+              <h2 className="text-2xl font-bold">Weryfikacja depeszy</h2>
+            </div>
+
+            <div className="grid grid-cols-3 gap-6">
+              <div className="col-span-2">
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold mb-2">Treść depeszy</h3>
+                  <textarea
+                    value={editedContent}
+                    onChange={(e) => setEditedContent(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 min-h-[300px]"
+                  />
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-semibold mb-3">Metadane</h3>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <span className="text-gray-600">Typ:</span>
+                    <p className="font-medium">{selectedDispatch.type}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Wydarzenie:</span>
+                    <p className="font-medium">{event?.title}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Autor:</span>
+                    <p className="font-medium">{selectedDispatch.assignedTo}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Czas publikacji:</span>
+                    <p className="font-medium">{new Date(selectedDispatch.publishTime).toLocaleString('pl-PL')}</p>
+                  </div>
+                </div>
+
+                <div className="mt-4 pt-4 border-t">
+                  <label className="block text-sm font-medium mb-2">Miejsce</label>
+                  <input
+                    type="text"
+                    value={editedMetadata.place}
+                    onChange={(e) => setEditedMetadata({...editedMetadata, place: e.target.value})}
+                    className="w-full border rounded px-2 py-1 text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6 pt-4 border-t">
+              <button
+                onClick={() => approveDispatch(dispatches)}
+                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
+              >
+                <Check />
+                Zatwierdź i opublikuj
+              </button>
+              <button
+                onClick={() => rejectDispatch(dispatches)}
+                className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 flex items-center gap-2"
+              >
+                <X />
+                Odeślij do poprawy
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div>
+          <div className="flex items-center gap-3 mb-6">
+            <button onClick={onBack} className="text-gray-600 hover:text-gray-800">
+              <ArrowLeft />
+            </button>
+            <h2 className="text-2xl font-bold">Depesze do weryfikacji</h2>
+          </div>
+
+          <div className="space-y-3">
+            {dispatches.map(dispatch => {
+              const event = events.find(e => e.id === dispatch.eventId);
+              return (
+                <div key={dispatch.id} className="bg-white rounded-lg shadow p-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-lg">{dispatch.type}</h3>
+                      <p className="text-sm text-gray-600">Wydarzenie: {event?.title}</p>
+                      <p className="text-sm text-gray-600">Autor: {dispatch.assignedTo}</p>
+                    </div>
+                    <button
+                      onClick={() => handleReview(dispatch)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    >
+                      Sprawdź
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    };
+
+    // Panel dziennikarza
+    const JournalistView = ({ events, dispatches, saveDispatches, downloadXML }) => {
+      const [selectedDispatch, setSelectedDispatch] = useState(null);
+
+      const journalistName = 'Dziennikarz1';
+      const myDispatches = dispatches.filter(d => d.assignedTo === journalistName);
+
+      const startWriting = (dispatch) => {
+        setSelectedDispatch({
+          ...dispatch,
+          content: dispatch.content || '',
+          status: 'Draft'
+        });
+      };
+
+      const saveAndSend = async () => {
+        const updated = dispatches.map(d =>
+          d.id === selectedDispatch.id
+            ? {
+                ...selectedDispatch,
+                status: 'Wysłana do Edytora',
+                author: journalistName,
+                createdAt: selectedDispatch.createdAt || new Date().toISOString(),
+                modifiedAt: new Date().toISOString()
+              }
+            : d
+        );
+        
+        await saveDispatches(updated);
+        
+        const event = events.find(e => e.id === selectedDispatch.eventId);
+        const xml = generateDispatchXML({...selectedDispatch, author: journalistName}, event);
+        downloadXML(`depesza_draft_${selectedDispatch.id}.xml`, xml);
+        
+        setSelectedDispatch(null);
+      };
+
+      if (selectedDispatch) {
+        const event = events.find(e => e.id === selectedDispatch.eventId);
+        const maxLength = selectedDispatch.type === 'Pilna' ? 150 : null;
+
+        return (
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <button onClick={() => setSelectedDispatch(null)} className="text-gray-600 hover:text-gray-800">
+                <ArrowLeft />
+              </button>
+              <h2 className="text-2xl font-bold">Pisanie depeszy: {selectedDispatch.type}</h2>
+            </div>
+
+            <div className="grid grid-cols-3 gap-6">
+              <div className="col-span-2">
+                <div className="mb-4">
+                  {selectedDispatch.type === 'Pilna' && (
+                    <div className="bg-red-50 border border-red-200 rounded p-3 mb-3 text-sm text-red-800">
+                      ⚠️ Depesza pilna - maksymalnie jedno zdanie (ok. 150 znaków)
+                    </div>
+                  )}
+                  
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Treść depeszy
+                    {maxLength && (
+                      <span className={`ml-2 ${selectedDispatch.content.length > maxLength ? 'text-red-600' : 'text-gray-500'}`}>
+                        ({selectedDispatch.content.length}/{maxLength})
+                      </span>
+                    )}
+                  </label>
+                  <textarea
+                    value={selectedDispatch.content}
+                    onChange={(e) => setSelectedDispatch({...selectedDispatch, content: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 min-h-[400px]"
+                    placeholder="Zacznij pisać..."
+                  />
+                </div>
+
+                {selectedDispatch.type === 'Krótka' && (
+                  <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm">
+                    <p className="font-medium mb-2">Opcje dla depeszy krótkiej:</p>
+                    <label className="flex items-center gap-2">
+                      <input type="checkbox" className="w-4 h-4" />
+                      <span>Dodaj depeszę pilną do tytułu</span>
+                    </label>
+                  </div>
+                )}
+
+                {selectedDispatch.type === 'Opis' && (
+                  <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm">
+                    <p className="font-medium mb-2">Opcje dla depeszy opisu:</p>
+                    <label className="flex items-center gap-2 mb-2">
+                      <input type="checkbox" className="w-4 h-4" />
+                      <span>Dodaj depeszę krótką</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input type="checkbox" className="w-4 h-4" />
+                      <span>Dodaj background</span>
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-semibold mb-4">Informacje</h3>
+                
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <span className="text-gray-600 block mb-1">Wydarzenie:</span>
+                    <p className="font-medium bg-white p-2 rounded border">{event?.title}</p>
+                  </div>
+
+                  <div>
+                    <span className="text-gray-600 block mb-1">Typ depeszy:</span>
+                    <p className="font-medium">{selectedDispatch.type}</p>
+                  </div>
+
+                  <div>
+                    <span className="text-gray-600 block mb-1">Planowana publikacja:</span>
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <Clock />
+                      {new Date(selectedDispatch.publishTime).toLocaleString('pl-PL')}
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="text-gray-600 block mb-1">Miejsce:</span>
+                    <p className="font-medium">{event?.place}</p>
+                  </div>
+
+                  <div>
+                    <span className="text-gray-600 block mb-1">Tematy:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {event?.topics.map(t => (
+                        <span key={t} className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="text-gray-600 block mb-1">Słowa kluczowe:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {event?.keywords.map(k => (
+                        <span key={k} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                          {k}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6 pt-4 border-t">
+              <button
+                onClick={saveAndSend}
+                disabled={!selectedDispatch.content.trim() || (maxLength && selectedDispatch.content.length > maxLength)}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                <Send />
+                Wyślij do edytora
+              </button>
+              <button
+                onClick={() => setSelectedDispatch(null)}
+                className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400"
+              >
+                Zapisz roboczo
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      const eventGroups = {};
+      myDispatches.forEach(dispatch => {
+        const event = events.find(e => e.id === dispatch.eventId);
+        if (event) {
+          if (!eventGroups[event.id]) {
+            eventGroups[event.id] = { event, dispatches: [] };
+          }
+          eventGroups[event.id].dispatches.push(dispatch);
+        }
+      });
+
+      return (
+        <div>
+          <div className="mb-6">
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Moje zadania</h2>
+            <div className="flex items-center gap-2 text-gray-600">
+              <User />
+              <span>Zalogowano jako: <strong>{journalistName}</strong></span>
+            </div>
+          </div>
+
+          {Object.keys(eventGroups).length === 0 ? (
+            <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+              <div className="flex justify-center mb-4"><FileText /></div>
+              <p>Brak przypisanych zadań.</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {Object.values(eventGroups).map(({ event, dispatches }) => (
+                <div key={event.id} className="bg-white rounded-lg shadow p-5">
+                  <div className="mb-4">
+                    <h3 className="text-xl font-semibold text-gray-800">{event.title}</h3>
+                    <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+                      <Calendar />
+                      {new Date(event.dateTime).toLocaleString('pl-PL')}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    {dispatches.map(dispatch => (
+                      <div key={dispatch.id} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg border">
+                        <div className="flex items-center gap-3">
+                          <FileText />
+                          <div>
+                            <p className="font-medium">{dispatch.type}</p>
+                            <p className="text-xs text-gray-600">
+                              Publikacja: {new Date(dispatch.publishTime).toLocaleString('pl-PL')}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className={`text-xs px-3 py-1 rounded-full ${
+                            dispatch.status === 'Draft' ? 'bg-gray-200 text-gray-700' :
+                            dispatch.status === 'Wysłana do Edytora' ? 'bg-orange-200 text-orange-800' :
+                            dispatch.status === 'Zatwierdzona' ? 'bg-green-200 text-green-800' :
+                            'bg-yellow-200 text-yellow-800'
+                          }`}>
+                            {dispatch.status}
+                          </span>
+                          {dispatch.status !== 'Zatwierdzona' && (
+                            <button
+                              onClick={() => startWriting(dispatch)}
+                              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
+                            >
+                              {dispatch.status === 'Draft' ? 'Kontynuuj' : 'Rozpocznij'}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // Renderowanie aplikacji
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<SyrenkaCMS />);
   </script>
