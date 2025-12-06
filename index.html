@@ -106,6 +106,7 @@
     const saveToStorage = async (key, data) => {
       try {
         await window.storage.set(storageKey(key), JSON.stringify(data));
+        console.log('Zapisywane depesze:', dispatches);
       } catch (error) {
         console.error('Błąd zapisu:', error);
       }
