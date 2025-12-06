@@ -323,7 +323,7 @@
         setScreen('editEvent');
       };
 
-      const saveEvent = async (event) => {
+   <!-- STARY const saveEvent = async (event) => {
         const newEvents = events.find(e => e.id === event.id)
           ? events.map(e => e.id === event.id ? event : e)
           : [...events, event];
@@ -335,8 +335,36 @@
         
         setScreen('list');
         setCurrentEvent(null);
-      };
+      }; -->
 
+     const saveEvent = async (event) => {
+  // Aktualizuj listę wydarzeń
+  const newEvents = events.find(e => e.id === event.id)
+    ? events.map(e => e.id === event.id ? event : e)
+    : [...events, event];
+  setEvents(newEvents); // Aktualizuj stan wydarzeń
+  await saveToStorage('events', newEvents); // Zapisz wydarzenia w localStorage
+
+  // Dodaj depesze wydarzenia do dispatches
+  const newDispatches = [
+    ...dispatches,
+    ...event.dispatches.map(d => ({
+      ...d,
+      assignedTo: d.assignedTo || 'Dziennikarz1', // Domyślne przypisanie
+      eventId: event.id // Łączenie depeszy z wydarzeniem
+    }))
+  ];
+  setDispatches(newDispatches); // Aktualizuj stan depesz
+  await saveToStorage('dispatches', newDispatches); // Zapisz depesze w localStorage
+
+  // Generuj i pobierz XML wydarzenia
+  const xml = generateEventXML(event); // Funkcja generująca XML
+  downloadXML(`wydarzenie_${event.id}.xml`, xml);
+
+  // Zresetuj ekran edytora
+  setScreen('list');
+  setCurrentEvent(null);
+};
       const pendingDispatches = dispatches.filter(d => d.status === 'Wysłana do Edytora');
 
       if (screen === 'createEvent' || screen === 'editEvent') {
