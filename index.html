@@ -323,19 +323,19 @@
         setScreen('editEvent');
       };
 
-   <!-- STARY const saveEvent = async (event) => {
-        const newEvents = events.find(e => e.id === event.id)
-          ? events.map(e => e.id === event.id ? event : e)
-          : [...events, event];
-        
-        await saveEvents(newEvents);
-        
-        const xml = generateEventXML(event);
-        downloadXML(`wydarzenie_${event.id}.xml`, xml);
-        
-        setScreen('list');
-        setCurrentEvent(null);
-      }; -->
+//   STARY const saveEvent = async (event) => {
+//        const newEvents = events.find(e => e.id === event.id)
+//          ? events.map(e => e.id === event.id ? event : e)
+//         : [...events, event];
+//        
+//        await saveEvents(newEvents);
+//        
+//        const xml = generateEventXML(event);
+//        downloadXML(`wydarzenie_${event.id}.xml`, xml);
+//       
+//        setScreen('list');
+//        setCurrentEvent(null);
+//      };
 
      const saveEvent = async (event) => {
   // Aktualizuj listę wydarzeń
