@@ -909,19 +909,63 @@
     };
 
     // Panel dziennikarza
-    const JournalistView = ({ events, dispatches, saveDispatches, downloadXML }) => {
-      const [selectedDispatch, setSelectedDispatch] = useState(null);
 
-      const journalistName = 'Dziennikarz1';
-      const myDispatches = dispatches.filter(d => d.assignedTo === journalistName);
+const JournalistView = () => {
+  const journalistName = 'Dziennikarz1'; // Nazwa zalogowanego dziennikarza
+  const { dispatches } = useStorage(); // Pobieranie danych z localStorage
 
-      const startWriting = (dispatch) => {
-        setSelectedDispatch({
-          ...dispatch,
-          content: dispatch.content || '',
-          status: 'Draft'
-        });
-      };
+  // Filtruj depesze przypisane do dziennikarza
+  const myDispatches = dispatches.filter(d => d.assignedTo === journalistName);
+  
+  if (myDispatches.length === 0) {
+    return (
+      <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+        <p>Brak przypisanych depesz</p>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <h2 className="text-3xl font-bold text-gray-800 mb-6">Moje Depesze</h2>
+      <div className="space-y-3">
+        {myDispatches.map(dispatch => (
+          <div key={dispatch.id} className="bg-white rounded-lg shadow p-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="font-semibold text-lg">{dispatch.type}</h3>
+                <p className="text-sm text-gray-600">Wydarzenie ID: {dispatch.eventId}</p>
+                <p className="text-sm text-gray-600">Status: {dispatch.status}</p>
+              </div>
+              {dispatch.status === 'Draft' && (
+                <button
+                  onClick={() => console.log(`Edytuj depeszę ${dispatch.id}`)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                >
+                  Edytuj
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+//    const JournalistView = ({ events, dispatches, saveDispatches, downloadXML }) => {
+//      const [selectedDispatch, setSelectedDispatch] = useState(null);
+//
+//      const journalistName = 'Dziennikarz1';
+//      const myDispatches = dispatches.filter(d => d.assignedTo === journalistName);
+//
+//      const startWriting = (dispatch) => {
+//        setSelectedDispatch({
+//          ...dispatch,
+//         content: dispatch.content || '',
+//          status: 'Draft'
+//        });
+//      };
 
       const saveAndSend = async () => {
         const updated = dispatches.map(d =>
