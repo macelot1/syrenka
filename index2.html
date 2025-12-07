@@ -471,6 +471,37 @@
       };
     }
 
+    // ID Generator with sequence
+    const generateId = async (prefix) => {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      
+      const timeKey = `${year}${month}${day}_${hours}${minutes}${seconds}`;
+      const storageKey = `syrenka_seq_${prefix}_${timeKey}`;
+      
+      // Pobierz aktualny licznik dla tej sekundy
+      let sequence = 1;
+      try {
+        const result = await window.storage.get(storageKey);
+        if (result) {
+          sequence = parseInt(result.value) + 1;
+        }
+      } catch (error) {
+        console.error('Błąd odczytu sekwencji:', error);
+      }
+      
+      // Zapisz nowy licznik
+      await window.storage.set(storageKey, String(sequence));
+      
+      const seqStr = String(sequence).padStart(3, '0');
+      return `${prefix}${timeKey}_${seqStr}`;
+    };
+
     // SVG Icons as components
     const Calendar = () => (
       <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -740,9 +771,10 @@
       const [screen, setScreen] = useState('list');
       const [currentEvent, setCurrentEvent] = useState(null);
 
-      const createNewEvent = () => {
+      const createNewEvent = async () => {
+        const id = await generateId('EVT');
         setCurrentEvent({
-          id: `EVT${Date.now()}`,
+          id: id,
           title: '',
           description: '',
           keywords: [],
@@ -873,9 +905,10 @@
       const journalistOptions = ['Dziennikarz1', 'Dziennikarz2', 'Dziennikarz3'];
       const dispatchTypes = ['Pilna', 'Krótka', 'Opis', 'Background'];
 
-      const addDispatch = () => {
+      const addDispatch = async () => {
+        const id = await generateId('DIS');
         const newDispatch = {
-          id: `DIS${Date.now()}`,
+          id: id,
           type: 'Krótka',
           publishTime: '',
           assignedTo: '',
