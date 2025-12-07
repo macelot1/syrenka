@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Syrenka - CMS Agencji Prasowej</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      background-color: #f9fafb;
+      color: #111827;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+    
+    .nav {
+      background-color: #2563eb;
+      color: white;
+      padding: 1rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .nav-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .nav-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .nav-subtitle {
+      color: #bfdbfe;
+      font-size: 0.875rem;
+      margin-left: 1rem;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-primary {
+      background-color: #2563eb;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
+    
+    .btn-secondary {
+      background-color: #3b82f6;
+      color: white;
+    }
+    
+    .btn-success {
+      background-color: #16a34a;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background-color: #15803d;
+    }
+    
+    .btn-warning {
+      background-color: #f97316;
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background-color: #ea580c;
+    }
+    
+    .btn-danger {
+      background-color: #dc2626;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #b91c1c;
+    }
+    
+    .btn-light {
+      background-color: #d1d5db;
+      color: #374151;
+    }
+    
+    .btn-light:hover {
+      background-color: #9ca3af;
+    }
+    
+    .btn-nav {
+      background-color: #3b82f6;
+      color: white;
+    }
+    
+    .btn-nav.active {
+      background-color: white;
+      color: #2563eb;
+    }
+    
+    .btn:disabled {
+      background-color: #9ca3af;
+      cursor: not-allowed;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .card-lg {
+      padding: 1.5rem;
+    }
+    
+    .card:hover {
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .input {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    .input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .textarea {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      resize: vertical;
+      font-family: inherit;
+    }
+    
+    .textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 0.25rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .grid {
+      display: grid;
+      gap: 1rem;
+    }
+    
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .flex {
+      display: flex;
+    }
+    
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .flex-gap {
+      gap: 0.75rem;
+    }
+    
+    .flex-wrap {
+      flex-wrap: wrap;
+    }
+    
+    .tag {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .tag-gray {
+      background-color: #e5e7eb;
+      color: #374151;
+    }
+    
+    .tag-blue {
+      background-color: #2563eb;
+      color: white;
+    }
+    
+    .tag-green {
+      background-color: #16a34a;
+      color: white;
+    }
+    
+    .tag-purple {
+      background-color: #9333ea;
+      color: white;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .badge-gray {
+      background-color: #e5e7eb;
+      color: #374151;
+    }
+    
+    .badge-orange {
+      background-color: #fed7aa;
+      color: #9a3412;
+    }
+    
+    .badge-green {
+      background-color: #bbf7d0;
+      color: #166534;
+    }
+    
+    .badge-yellow {
+      background-color: #fef08a;
+      color: #854d0e;
+    }
+    
+    .alert {
+      padding: 0.75rem;
+      border-radius: 0.375rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+    }
+    
+    .alert-danger {
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+    
+    .alert-info {
+      background-color: #eff6ff;
+      border: 1px solid: #bfdbfe;
+      color: #1e40af;
+    }
+    
+    .panel {
+      background-color: #f9fafb;
+      padding: 1rem;
+      border-radius: 0.5rem;
+    }
+    
+    .text-sm {
+      font-size: 0.875rem;
+    }
+    
+    .text-xs {
+      font-size: 0.75rem;
+    }
+    
+    .text-gray {
+      color: #6b7280;
+    }
+    
+    .text-center {
+      text-align: center;
+    }
+    
+    .font-bold {
+      font-weight: 700;
+    }
+    
+    .font-semibold {
+      font-weight: 600;
+    }
+    
+    .font-medium {
+      font-weight: 500;
+    }
+    
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-4 { margin-top: 1rem; }
+    .mt-6 { margin-top: 1.5rem; }
+    
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-4 { padding-top: 1rem; }
+    
+    .border-t {
+      border-top: 1px solid #e5e7eb;
+    }
+    
+    .icon {
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+    .icon-lg {
+      width: 64px;
+      height: 64px;
+      opacity: 0.5;
+    }
+    
+    h1 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+    }
+    
+    select:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+    
+    .checkbox {
+      width: 1rem;
+      height: 1rem;
+      cursor: pointer;
+    }
+    
+    .empty-state {
+      padding: 3rem;
+      text-align: center;
+      color: #6b7280;
+    }
+    
+    .dispatch-item {
+      background-color: #f9fafb;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .min-h-300 {
+      min-height: 300px;
+    }
+    
+    .min-h-400 {
+      min-height: 400px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    
+    // Mock window.storage
+    if (!window.storage) {
+      window.storage = {
+        async get(key) {
+          try {
+            const data = localStorage.getItem(key);
+            return data ? { key, value: data } : null;
+          } catch (error) {
+            console.error('Błąd odczytu:', error);
+            return null;
+          }
+        },
+        async set(key, value) {
+          try {
+            localStorage.setItem(key, value);
+            return { key, value };
+          } catch (error) {
+            console.error('Błąd zapisu:', error);
+            return null;
+          }
+        },
+        async delete(key) {
+          try {
+            localStorage.removeItem(key);
+            return { key, deleted: true };
+          } catch (error) {
+            console.error('Błąd usuwania:', error);
+            return null;
+          }
+        }
+      };
+    }
+
+    // SVG Icons as components
+    const Calendar = () => (
+      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+        <line x1="16" x2="16" y1="2" y2="6"/>
+        <line x1="8" x2="8" y1="2" y2="6"/>
+        <line x1="3" x2="21" y1="10" y2="10"/>
+      </svg>
+    );
+    
+    const Clock = () => (
+      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+    );
+    
+    const User = () => (
+      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    );
+    
+    const FileText = () => (
+      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+    );
+    
+    const Send = () => (
+      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <line x1="22" x2="11" y1="2" y2="13"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    );
+    
+    const Check = () => (
+      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    );
+    
+    const X = () => (
+      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <line x1="18" x2="6" y1="6" y2="18"/>
+        <line x1="6" x2="18" y1="6" y2="18"/>
+      </svg>
+    );
+    
+    const Plus = () => (
+      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <line x1="12" x2="12" y1="5" y2="19"/>
+        <line x1="5" x2="19" y1="12" y2="12"/>
+      </svg>
+    );
+    
+    const Edit = () => (
+      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+      </svg>
+    );
+    
+    const ArrowLeft = () => (
+      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <line x1="19" x2="5" y1="12" y2="12"/>
+        <polyline points="12 19 5 12 12 5"/>
+      </svg>
+    );
+
+    // Storage helpers
+    const storageKey = (key) => `syrenka_${key}`;
+
+    const saveToStorage = async (key, data) => {
+      try {
+        await window.storage.set(storageKey(key), JSON.stringify(data));
+      } catch (error) {
+        console.error('Błąd zapisu:', error);
+      }
+    };
+
+    const loadFromStorage = async (key) => {
+      try {
+        const result = await window.storage.get(storageKey(key));
+        return result ? JSON.parse(result.value) : null;
+      } catch (error) {
+        console.error('Błąd odczytu:', error);
+        return null;
+      }
+    };
+
+    // XML Generators
+    const generateEventXML = (event) => {
+      const timestamp = new Date().toISOString();
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<newsItem xmlns="http://iptc.org/std/nar/2006-10-01/" 
+          guid="urn:newsml:syrenka.pl:event:${event.id}"
+          version="1"
+          standard="NewsML-G2"
+          standardversion="2.29">
+  <catalogRef href="http://www.iptc.org/std/catalog/catalog.IPTC-G2-Standards_38.xml"/>
+  <rightsInfo>
+    <copyrightHolder literal="Agencja Syrenka"/>
+  </rightsInfo>
+  <itemMeta>
+    <itemClass qcode="ninat:event"/>
+    <provider literal="Agencja Syrenka"/>
+    <versionCreated>${timestamp}</versionCreated>
+  </itemMeta>
+  <contentMeta>
+    <contentCreated>${event.dateTime}</contentCreated>
+    <located literal="${event.place}"/>
+    ${event.keywords.map(k => `<keyword>${k}</keyword>`).join('\n    ')}
+    ${event.topics.map(t => `<subject type="cpnat:abstract"><name>${t}</name></subject>`).join('\n    ')}
+  </contentMeta>
+</newsItem>`;
+    };
+
+    const generateDispatchXML = (dispatch, event) => {
+      const timestamp = new Date().toISOString();
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<newsItem xmlns="http://iptc.org/std/nar/2006-10-01/" 
+          guid="urn:newsml:syrenka.pl:dispatch:${dispatch.id}"
+          version="1"
+          standard="NewsML-G2"
+          standardversion="2.29">
+  <itemMeta>
+    <itemClass qcode="ninat:text"/>
+    <provider literal="Agencja Syrenka"/>
+    <versionCreated>${timestamp}</versionCreated>
+  </itemMeta>
+  <contentMeta>
+    <creator literal="${dispatch.author || dispatch.assignedTo}"/>
+    ${dispatch.editor ? `<contributor role="editor" literal="${dispatch.editor}"/>` : ''}
+    <located literal="${event?.place || ''}"/>
+    <headline>${dispatch.title || 'Depesza'}</headline>
+  </contentMeta>
+</newsItem>`;
+    };
+
+    // Main App
+    const SyrenkaCMS = () => {
+      const [view, setView] = useState('edytor');
+      const [events, setEvents] = useState([]);
+      const [dispatches, setDispatches] = useState([]);
+
+      useEffect(() => {
+        loadData();
+      }, []);
+
+      const loadData = async () => {
+        const eventsData = await loadFromStorage('events');
+        const dispatchesData = await loadFromStorage('dispatches');
+        if (eventsData) setEvents(eventsData);
+        if (dispatchesData) setDispatches(dispatchesData);
+      };
+
+      const saveEvents = async (newEvents) => {
+        setEvents(newEvents);
+        await saveToStorage('events', newEvents);
+      };
+
+      const saveDispatches = async (newDispatches) => {
+        setDispatches(newDispatches);
+        await saveToStorage('dispatches', newDispatches);
+      };
+
+      const downloadXML = (filename, content) => {
+        const blob = new Blob([content], { type: 'application/xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+
+      return (
+        <div>
+          <nav className="nav">
+            <div className="nav-content">
+              <div className="flex flex-gap">
+                <h1 className="nav-title">System Syrenka</h1>
+                <span className="nav-subtitle">CMS Agencji Prasowej</span>
+              </div>
+              <div className="btn-group">
+                <button
+                  onClick={() => setView('edytor')}
+                  className={view === 'edytor' ? 'btn btn-nav active' : 'btn btn-nav'}
+                >
+                  Panel Edytora
+                </button>
+                <button
+                  onClick={() => setView('dziennikarz')}
+                  className={view === 'dziennikarz' ? 'btn btn-nav active' : 'btn btn-nav'}
+                >
+                  Panel Dziennikarza
+                </button>
+              </div>
+            </div>
+          </nav>
+
+          <div className="container">
+            {view === 'edytor' ? (
+              <EditorView 
+                events={events} 
+                dispatches={dispatches}
+                saveEvents={saveEvents}
+                saveDispatches={saveDispatches}
+                downloadXML={downloadXML}
+              />
+            ) : (
+              <JournalistView 
+                events={events}
+                dispatches={dispatches}
+                saveDispatches={saveDispatches}
+                downloadXML={downloadXML}
+              />
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    // Editor View
+    const EditorView = ({ events, dispatches, saveEvents, saveDispatches, downloadXML }) => {
+      const [screen, setScreen] = useState('list');
+      const [currentEvent, setCurrentEvent] = useState(null);
+
+      const createNewEvent = () => {
+        setCurrentEvent({
+          id: `EVT${Date.now()}`,
+          title: '',
+          description: '',
+          keywords: [],
+          topics: [],
+          dateTime: '',
+          place: '',
+          services: [],
+          visibleToClient: true,
+          dispatches: []
+        });
+        setScreen('createEvent');
+      };
+
+      const editEvent = (event) => {
+        setCurrentEvent({...event});
+        setScreen('editEvent');
+      };
+
+      const saveEvent = async (event) => {
+        const newEvents = events.find(e => e.id === event.id)
+          ? events.map(e => e.id === event.id ? event : e)
+          : [...events, event];
+        
+        await saveEvents(newEvents);
+        
+        // Synchronizuj depesze z globalną listą dispatches
+        const existingDispatchIds = dispatches.map(d => d.id);
+        const newDispatches = [...dispatches];
+        
+        event.dispatches.forEach(dispatch => {
+          if (!existingDispatchIds.includes(dispatch.id)) {
+            // Dodaj nową depeszę
+            newDispatches.push(dispatch);
+          } else {
+            // Zaktualizuj istniejącą depeszę
+            const index = newDispatches.findIndex(d => d.id === dispatch.id);
+            if (index !== -1) {
+              newDispatches[index] = dispatch;
+            }
+          }
+        });
+        
+        await saveDispatches(newDispatches);
+        
+        const xml = generateEventXML(event);
+        downloadXML(`wydarzenie_${event.id}.xml`, xml);
+        
+        setScreen('list');
+        setCurrentEvent(null);
+      };
+
+      const pendingDispatches = dispatches.filter(d => d.status === 'Wysłana do Edytora');
+
+      if (screen === 'createEvent' || screen === 'editEvent') {
+        return (
+          <EventForm 
+            event={currentEvent}
+            onSave={saveEvent}
+            onCancel={() => {
+              setScreen('list');
+              setCurrentEvent(null);
+            }}
+          />
+        );
+      }
+
+      if (screen === 'reviewDispatches') {
+        return (
+          <DispatchReview
+            dispatches={pendingDispatches}
+            allDispatches={dispatches}
+            events={events}
+            onUpdate={saveDispatches}
+            onBack={() => setScreen('list')}
+            downloadXML={downloadXML}
+          />
+        );
+      }
+
+      return (
+        <div>
+          <div className="flex-between mb-6">
+            <h2>Wydarzenia</h2>
+            <div className="btn-group">
+              {pendingDispatches.length > 0 && (
+                <button
+                  onClick={() => setScreen('reviewDispatches')}
+                  className="btn btn-warning"
+                >
+                  <FileText />
+                  Depesze do weryfikacji ({pendingDispatches.length})
+                </button>
+              )}
+              <button
+                onClick={createNewEvent}
+                className="btn btn-primary"
+              >
+                <Plus />
+                Nowe wydarzenie
+              </button>
+            </div>
+          </div>
+
+          {events.length === 0 ? (
+            <div className="card empty-state">
+              <Calendar style={{width: '64px', height: '64px', margin: '0 auto', opacity: 0.5}} />
+              <p>Brak wydarzeń. Utwórz pierwsze wydarzenie.</p>
+            </div>
+          ) : (
+            <div className="grid">
+              {events.map(event => (
+                <EventCard key={event.id} event={event} onEdit={editEvent} />
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // Event Form Component
+    const EventForm = ({ event, onSave, onCancel }) => {
+      const [formData, setFormData] = useState(event);
+
+      const keywordOptions = ['Keyword1', 'Keyword2', 'Keyword3'];
+      const topicOptions = ['Temat1', 'Temat2', 'Temat3'];
+      const placeOptions = ['Miejsce1', 'Miejsce2', 'Miejsce3'];
+      const serviceOptions = ['Serwis1', 'Serwis2', 'Serwis3'];
+      const journalistOptions = ['Dziennikarz1', 'Dziennikarz2', 'Dziennikarz3'];
+      const dispatchTypes = ['Pilna', 'Krótka', 'Opis', 'Background'];
+
+      const addDispatch = () => {
+        const newDispatch = {
+          id: `DIS${Date.now()}`,
+          type: 'Krótka',
+          publishTime: '',
+          assignedTo: '',
+          status: 'Draft',
+          eventId: formData.id
+        };
+        setFormData({
+          ...formData,
+          dispatches: [...formData.dispatches, newDispatch]
+        });
+      };
+
+      const updateDispatch = (index, field, value) => {
+        const newDispatches = [...formData.dispatches];
+        newDispatches[index][field] = value;
+        setFormData({ ...formData, dispatches: newDispatches });
+      };
+
+      const removeDispatch = (index) => {
+        setFormData({
+          ...formData,
+          dispatches: formData.dispatches.filter((_, i) => i !== index)
+        });
+      };
+
+      const toggleMultiSelect = (field, value) => {
+        const current = formData[field];
+        const newValue = current.includes(value)
+          ? current.filter(v => v !== value)
+          : [...current, value];
+        setFormData({ ...formData, [field]: newValue });
+      };
+
+      return (
+        <div className="card card-lg">
+          <div className="flex flex-gap mb-4">
+            <button onClick={onCancel} className="btn btn-light" style={{padding: '0.5rem'}}>
+              <ArrowLeft />
+            </button>
+            <h2>{event.title ? 'Edycja wydarzenia' : 'Nowe wydarzenie'}</h2>
+          </div>
+
+          <div>
+            <div className="form-group">
+              <label className="label">Tytuł wydarzenia</label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                className="input"
+                placeholder="Wprowadź tytuł..."
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="label">Opis</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="textarea"
+                rows="3"
+                placeholder="Opis wydarzenia..."
+              />
+            </div>
+
+            <div className="grid grid-2 mb-4">
+              <div>
+                <label className="label">Data i godzina</label>
+                <input
+                  type="datetime-local"
+                  value={formData.dateTime}
+                  onChange={(e) => setFormData({ ...formData, dateTime: e.target.value })}
+                  className="input"
+                />
+              </div>
+
+              <div>
+                <label className="label">Miejsce</label>
+                <select
+                  value={formData.place}
+                  onChange={(e) => setFormData({ ...formData, place: e.target.value })}
+                >
+                  <option value="">Wybierz miejsce...</option>
+                  {placeOptions.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="label">Słowa kluczowe</label>
+              <div className="flex flex-wrap flex-gap">
+                {keywordOptions.map(kw => (
+                  <button
+                    key={kw}
+                    type="button"
+                    onClick={() => toggleMultiSelect('keywords', kw)}
+                    className={formData.keywords.includes(kw) ? 'tag tag-blue' : 'tag tag-gray'}
+                  >
+                    {kw}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="label">Tematy</label>
+              <div className="flex flex-wrap flex-gap">
+                {topicOptions.map(t => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => toggleMultiSelect('topics', t)}
+                    className={formData.topics.includes(t) ? 'tag tag-green' : 'tag tag-gray'}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="label">Serwisy</label>
+              <div className="flex flex-wrap flex-gap">
+                {serviceOptions.map(s => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => toggleMultiSelect('services', s)}
+                    className={formData.services.includes(s) ? 'tag tag-purple' : 'tag tag-gray'}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="flex flex-gap" style={{alignItems: 'center'}}>
+                <input
+                  type="checkbox"
+                  checked={formData.visibleToClient}
+                  onChange={(e) => setFormData({ ...formData, visibleToClient: e.target.checked })}
+                  className="checkbox"
+                />
+                <span className="text-sm">Widoczne dla klienta</span>
+              </label>
+            </div>
+
+            <div className="border-t pt-4 mt-6">
+              <div className="flex-between mb-3">
+                <h3>Planowane depesze</h3>
+                <button
+                  type="button"
+                  onClick={addDispatch}
+                  className="btn btn-success"
+                >
+                  <Plus />
+                  Dodaj depeszę
+                </button>
+              </div>
+
+              <div className="grid">
+                {formData.dispatches.map((dispatch, index) => (
+                  <div key={dispatch.id} className="panel">
+                    <div className="grid grid-4 flex-gap">
+                      <div>
+                        <label className="label text-xs">Typ</label>
+                        <select
+                          value={dispatch.type}
+                          onChange={(e) => updateDispatch(index, 'type', e.target.value)}
+                        >
+                          {dispatchTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="label text-xs">Czas publikacji</label>
+                        <input
+                          type="datetime-local"
+                          value={dispatch.publishTime}
+                          onChange={(e) => updateDispatch(index, 'publishTime', e.target.value)}
+                          className="input"
+                        />
+                      </div>
+                      <div>
+                        <label className="label text-xs">Dziennikarz</label>
+                        <select
+                          value={dispatch.assignedTo}
+                          onChange={(e) => updateDispatch(index, 'assignedTo', e.target.value)}
+                        >
+                          <option value="">Nieprzypisany</option>
+                          {journalistOptions.map(j => <option key={j} value={j}>{j}</option>)}
+                        </select>
+                      </div>
+                      <div style={{display: 'flex', alignItems: 'flex-end'}}>
+                        <button
+                          type="button"
+                          onClick={() => removeDispatch(index)}
+                          className="btn btn-danger"
+                          style={{padding: '0.5rem'}}
+                        >
+                          <X />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-gap pt-4 mt-4">
+              <button
+                type="button"
+                onClick={() => onSave(formData)}
+                disabled={!formData.title || !formData.dateTime}
+                className="btn btn-primary"
+              >
+                Zapisz wydarzenie
+              </button>
+              <button
+                type="button"
+                onClick={onCancel}
+                className="btn btn-light"
+              >
+                Anuluj
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Event Card
+    const EventCard = ({ event, onEdit }) => {
+      return (
+        <div className="card">
+          <div className="flex-between mb-3">
+            <div>
+              <h3>{event.title}</h3>
+              <p className="text-sm text-gray mt-1">{event.description}</p>
+            </div>
+            <button
+              onClick={() => onEdit(event)}
+              className="btn btn-light"
+              style={{padding: '0.5rem'}}
+            >
+              <Edit />
+            </button>
+          </div>
+
+          <div className="grid grid-2 mb-3 text-sm">
+            <div className="flex flex-gap text-gray">
+              <Calendar />
+              {new Date(event.dateTime).toLocaleString('pl-PL')}
+            </div>
+            <div className="flex flex-gap text-gray">
+              <FileText />
+              {event.dispatches.length} depesz
+            </div>
+          </div>
+
+          <div className="flex flex-wrap flex-gap">
+            {event.topics.map(t => (
+              <span key={t} className="badge badge-green">
+                {t}
+              </span>
+            ))}
+          </div>
+
+          {event.dispatches.length > 0 && (
+            <div className="mt-3 pt-3 border-t">
+              <p className="text-xs text-gray mb-2">Planowane depesze:</p>
+              <div className="grid">
+                {event.dispatches.map(d => (
+                  <div key={d.id} className="dispatch-item text-sm">
+                    <span className="font-medium">{d.type}</span>
+                    <span className="text-gray">{d.assignedTo || 'Nieprzypisany'}</span>
+                    <span className={
+                      d.status === 'Draft' ? 'badge badge-gray' :
+                      d.status === 'Wysłana do Edytora' ? 'badge badge-orange' :
+                      d.status === 'Zatwierdzona' ? 'badge badge-green' : 'badge badge-yellow'
+                    }>
+                      {d.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // Dispatch Review
+    const DispatchReview = ({ dispatches, allDispatches, events, onUpdate, onBack, downloadXML }) => {
+      const [selectedDispatch, setSelectedDispatch] = useState(null);
+      const [editedContent, setEditedContent] = useState('');
+
+      const handleReview = (dispatch) => {
+        setSelectedDispatch(dispatch);
+        setEditedContent(dispatch.content || '');
+      };
+
+      const approveDispatch = async () => {
+        const updated = allDispatches.map(d => 
+          d.id === selectedDispatch.id
+            ? { 
+                ...d, 
+                status: 'Zatwierdzona', 
+                editor: 'Edytor',
+                content: editedContent,
+                modifiedAt: new Date().toISOString()
+              }
+            : d
+        );
+        
+        await onUpdate(updated);
+        
+        const event = events.find(e => e.id === selectedDispatch.eventId);
+        const approvedDispatch = updated.find(d => d.id === selectedDispatch.id);
+        const xml = generateDispatchXML(approvedDispatch, event);
+        downloadXML(`depesza_${approvedDispatch.id}.xml`, xml);
+        
+        setSelectedDispatch(null);
+      };
+
+      const rejectDispatch = async () => {
+        const updated = allDispatches.map(d => 
+          d.id === selectedDispatch.id
+            ? { ...d, status: 'Do poprawy' }
+            : d
+        );
+        await onUpdate(updated);
+        setSelectedDispatch(null);
+      };
+
+      if (selectedDispatch) {
+        const event = events.find(e => e.id === selectedDispatch.eventId);
+        
+        return (
+          <div className="card card-lg">
+            <div className="flex flex-gap mb-4">
+              <button onClick={() => setSelectedDispatch(null)} className="btn btn-light" style={{padding: '0.5rem'}}>
+                <ArrowLeft />
+              </button>
+              <h2>Weryfikacja depeszy</h2>
+            </div>
+
+            <div className="grid grid-3">
+              <div style={{gridColumn: 'span 2'}}>
+                <div className="form-group">
+                  <h3>Treść depeszy</h3>
+                  <textarea
+                    value={editedContent}
+                    onChange={(e) => setEditedContent(e.target.value)}
+                    className="textarea min-h-300"
+                  />
+                </div>
+              </div>
+
+              <div className="panel">
+                <h3 className="mb-3">Metadane</h3>
+                <div className="text-sm">
+                  <div className="mb-3">
+                    <span className="text-gray">Typ:</span>
+                    <p className="font-medium">{selectedDispatch.type}</p>
+                  </div>
+                  <div className="mb-3">
+                    <span className="text-gray">Wydarzenie:</span>
+                    <p className="font-medium">{event?.title}</p>
+                  </div>
+                  <div className="mb-3">
+                    <span className="text-gray">Autor:</span>
+                    <p className="font-medium">{selectedDispatch.assignedTo}</p>
+                  </div>
+                  <div className="mb-3">
+                    <span className="text-gray">Czas publikacji:</span>
+                    <p className="font-medium">{new Date(selectedDispatch.publishTime).toLocaleString('pl-PL')}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-gap mt-6 pt-4 border-t">
+              <button
+                onClick={approveDispatch}
+                className="btn btn-success"
+              >
+                <Check />
+                Zatwierdź i opublikuj
+              </button>
+              <button
+                onClick={rejectDispatch}
+                className="btn btn-danger"
+              >
+                <X />
+                Odeślij do poprawy
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div>
+          <div className="flex flex-gap mb-6">
+            <button onClick={onBack} className="btn btn-light" style={{padding: '0.5rem'}}>
+              <ArrowLeft />
+            </button>
+            <h2>Depesze do weryfikacji</h2>
+          </div>
+
+          <div className="grid">
+            {dispatches.map(dispatch => {
+              const event = events.find(e => e.id === dispatch.eventId);
+              return (
+                <div key={dispatch.id} className="card">
+                  <div className="flex-between">
+                    <div>
+                      <h3>{dispatch.type}</h3>
+                      <p className="text-sm text-gray">Wydarzenie: {event?.title}</p>
+                      <p className="text-sm text-gray">Autor: {dispatch.assignedTo}</p>
+                    </div>
+                    <button
+                      onClick={() => handleReview(dispatch)}
+                      className="btn btn-primary"
+                    >
+                      Sprawdź
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    };
+
+    // Journalist View
+    const JournalistView = ({ events, dispatches, saveDispatches, downloadXML }) => {
+      const [selectedDispatch, setSelectedDispatch] = useState(null);
+
+      const journalistName = 'Dziennikarz1';
+      const myDispatches = dispatches.filter(d => d.assignedTo === journalistName);
+
+      const startWriting = (dispatch) => {
+        setSelectedDispatch({
+          ...dispatch,
+          content: dispatch.content || '',
+          status: 'Draft'
+        });
+      };
+
+      const saveAndSend = async () => {
+        const updated = dispatches.map(d =>
+          d.id === selectedDispatch.id
+            ? {
+                ...selectedDispatch,
+                status: 'Wysłana do Edytora',
+                author: journalistName,
+                createdAt: selectedDispatch.createdAt || new Date().toISOString(),
+                modifiedAt: new Date().toISOString()
+              }
+            : d
+        );
+        
+        await saveDispatches(updated);
+        
+        const event = events.find(e => e.id === selectedDispatch.eventId);
+        const xml = generateDispatchXML({...selectedDispatch, author: journalistName}, event);
+        downloadXML(`depesza_draft_${selectedDispatch.id}.xml`, xml);
+        
+        setSelectedDispatch(null);
+      };
+
+      if (selectedDispatch) {
+        const event = events.find(e => e.id === selectedDispatch.eventId);
+        const maxLength = selectedDispatch.type === 'Pilna' ? 150 : null;
+
+        return (
+          <div className="card card-lg">
+            <div className="flex flex-gap mb-4">
+              <button onClick={() => setSelectedDispatch(null)} className="btn btn-light" style={{padding: '0.5rem'}}>
+                <ArrowLeft />
+              </button>
+              <h2>Pisanie depeszy: {selectedDispatch.type}</h2>
+            </div>
+
+            <div className="grid grid-3">
+              <div style={{gridColumn: 'span 2'}}>
+                <div className="form-group">
+                  {selectedDispatch.type === 'Pilna' && (
+                    <div className="alert alert-danger">
+                      ⚠️ Depesza pilna - maksymalnie jedno zdanie (ok. 150 znaków)
+                    </div>
+                  )}
+                  
+                  <label className="label">
+                    Treść depeszy
+                    {maxLength && (
+                      <span style={{color: selectedDispatch.content.length > maxLength ? '#dc2626' : '#6b7280', marginLeft: '0.5rem'}}>
+                        ({selectedDispatch.content.length}/{maxLength})
+                      </span>
+                    )}
+                  </label>
+                  <textarea
+                    value={selectedDispatch.content}
+                    onChange={(e) => setSelectedDispatch({...selectedDispatch, content: e.target.value})}
+                    className="textarea min-h-400"
+                    placeholder="Zacznij pisać..."
+                  />
+                </div>
+
+                {selectedDispatch.type === 'Krótka' && (
+                  <div className="alert alert-info">
+                    <p className="font-medium mb-2">Opcje dla depeszy krótkiej:</p>
+                    <label className="flex flex-gap" style={{alignItems: 'center'}}>
+                      <input type="checkbox" className="checkbox" />
+                      <span>Dodaj depeszę pilną do tytułu</span>
+                    </label>
+                  </div>
+                )}
+
+                {selectedDispatch.type === 'Opis' && (
+                  <div className="alert alert-info">
+                    <p className="font-medium mb-2">Opcje dla depeszy opisu:</p>
+                    <label className="flex flex-gap mb-2" style={{alignItems: 'center'}}>
+                      <input type="checkbox" className="checkbox" />
+                      <span>Dodaj depeszę krótką</span>
+                    </label>
+                    <label className="flex flex-gap" style={{alignItems: 'center'}}>
+                      <input type="checkbox" className="checkbox" />
+                      <span>Dodaj background</span>
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              <div className="panel">
+                <h3 className="mb-4">Informacje</h3>
+                
+                <div className="text-sm">
+                  <div className="mb-3">
+                    <span className="text-gray mb-1" style={{display: 'block'}}>Wydarzenie:</span>
+                    <p className="font-medium" style={{background: 'white', padding: '0.5rem', borderRadius: '0.25rem', border: '1px solid #e5e7eb'}}>{event?.title}</p>
+                  </div>
+
+                  <div className="mb-3">
+                    <span className="text-gray mb-1" style={{display: 'block'}}>Typ depeszy:</span>
+                    <p className="font-medium">{selectedDispatch.type}</p>
+                  </div>
+
+                  <div className="mb-3">
+                    <span className="text-gray mb-1" style={{display: 'block'}}>Planowana publikacja:</span>
+                    <div className="flex flex-gap text-gray">
+                      <Clock />
+                      {new Date(selectedDispatch.publishTime).toLocaleString('pl-PL')}
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <span className="text-gray mb-1" style={{display: 'block'}}>Miejsce:</span>
+                    <p className="font-medium">{event?.place}</p>
+                  </div>
+
+                  <div className="mb-3">
+                    <span className="text-gray mb-1" style={{display: 'block'}}>Tematy:</span>
+                    <div className="flex flex-wrap flex-gap">
+                      {event?.topics.map(t => (
+                        <span key={t} className="badge badge-green">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <span className="text-gray mb-1" style={{display: 'block'}}>Słowa kluczowe:</span>
+                    <div className="flex flex-wrap flex-gap">
+                      {event?.keywords.map(k => (
+                        <span key={k} className="badge" style={{background: '#dbeafe', color: '#1e40af'}}>
+                          {k}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-gap mt-6 pt-4 border-t">
+              <button
+                onClick={saveAndSend}
+                disabled={!selectedDispatch.content.trim() || (maxLength && selectedDispatch.content.length > maxLength)}
+                className="btn btn-primary"
+              >
+                <Send />
+                Wyślij do edytora
+              </button>
+              <button
+                onClick={() => setSelectedDispatch(null)}
+                className="btn btn-light"
+              >
+                Zapisz roboczo
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      const eventGroups = {};
+      myDispatches.forEach(dispatch => {
+        const event = events.find(e => e.id === dispatch.eventId);
+        if (event) {
+          if (!eventGroups[event.id]) {
+            eventGroups[event.id] = { event, dispatches: [] };
+          }
+          eventGroups[event.id].dispatches.push(dispatch);
+        }
+      });
+
+      return (
+        <div>
+          <div className="mb-6">
+            <h2 className="mb-2">Moje zadania</h2>
+            <div className="flex flex-gap text-gray">
+              <User />
+              <span>Zalogowano jako: <strong>{journalistName}</strong></span>
+            </div>
+          </div>
+
+          {Object.keys(eventGroups).length === 0 ? (
+            <div className="card empty-state">
+              <FileText style={{width: '64px', height: '64px', margin: '0 auto', opacity: 0.5}} />
+              <p>Brak przypisanych zadań.</p>
+            </div>
+          ) : (
+            <div className="grid">
+              {Object.values(eventGroups).map(({ event, dispatches }) => (
+                <div key={event.id} className="card">
+                  <div className="mb-4">
+                    <h3>{event.title}</h3>
+                    <div className="flex flex-gap text-sm text-gray mt-1">
+                      <Calendar />
+                      {new Date(event.dateTime).toLocaleString('pl-PL')}
+                    </div>
+                  </div>
+
+                  <div className="grid">
+                    {dispatches.map(dispatch => (
+                      <div key={dispatch.id} className="dispatch-item">
+                        <div className="flex flex-gap">
+                          <FileText />
+                          <div>
+                            <p className="font-medium">{dispatch.type}</p>
+                            <p className="text-xs text-gray">
+                              Publikacja: {new Date(dispatch.publishTime).toLocaleString('pl-PL')}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex flex-gap">
+                          <span className={
+                            dispatch.status === 'Draft' ? 'badge badge-gray' :
+                            dispatch.status === 'Wysłana do Edytora' ? 'badge badge-orange' :
+                            dispatch.status === 'Zatwierdzona' ? 'badge badge-green' :
+                            'badge badge-yellow'
+                          }>
+                            {dispatch.status}
+                          </span>
+                          {dispatch.status !== 'Zatwierdzona' && (
+                            <button
+                              onClick={() => startWriting(dispatch)}
+                              className="btn btn-primary"
+                              style={{fontSize: '0.875rem'}}
+                            >
+                              {dispatch.status === 'Draft' ? 'Kontynuuj' : 'Rozpocznij'}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // Render
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<SyrenkaCMS />);
+  </script>
+</body>
+</html>
