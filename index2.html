@@ -592,23 +592,62 @@
 
     const generateDispatchXML = (dispatch, event) => {
       const timestamp = new Date().toISOString();
+      const escapeXML = (str) => {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;')
+                  .replace(/</g, '&lt;')
+                  .replace(/>/g, '&gt;')
+                  .replace(/"/g, '&quot;')
+                  .replace(/'/g, '&apos;');
+      };
+      
       return `<?xml version="1.0" encoding="UTF-8"?>
 <newsItem xmlns="http://iptc.org/std/nar/2006-10-01/" 
           guid="urn:newsml:syrenka.pl:dispatch:${dispatch.id}"
           version="1"
           standard="NewsML-G2"
           standardversion="2.29">
+  <catalogRef href="http://www.iptc.org/std/catalog/catalog.IPTC-G2-Standards_38.xml"/>
+  <rightsInfo>
+    <copyrightHolder literal="Agencja Syrenka"/>
+    <copyrightNotice>Copyright Agencja Syrenka</copyrightNotice>
+  </rightsInfo>
   <itemMeta>
     <itemClass qcode="ninat:text"/>
     <provider literal="Agencja Syrenka"/>
     <versionCreated>${timestamp}</versionCreated>
+    <pubStatus qcode="stat:${dispatch.status === 'Zatwierdzona' ? 'usable' : 'withheld'}"/>
+    <role qcode="itemRole:${dispatch.type.toLowerCase()}"/>
   </itemMeta>
   <contentMeta>
-    <creator literal="${dispatch.author || dispatch.assignedTo}"/>
-    ${dispatch.editor ? `<contributor role="editor" literal="${dispatch.editor}"/>` : ''}
-    <located literal="${event?.place || ''}"/>
-    <headline>${dispatch.title || 'Depesza'}</headline>
+    <contentCreated>${dispatch.createdAt || timestamp}</contentCreated>
+    <contentModified>${dispatch.modifiedAt || timestamp}</contentModified>
+    <creator literal="${escapeXML(dispatch.author || dispatch.assignedTo)}"/>
+    ${dispatch.editor ? `<contributor role="editor" literal="${escapeXML(dispatch.editor)}"/>` : ''}
+    <located literal="${escapeXML(event?.place || '')}"/>
+    ${(dispatch.keywords || event?.keywords || []).map(k => `<keyword>${escapeXML(k)}</keyword>`).join('\n    ')}
+    ${(dispatch.topics || event?.topics || []).map(t => `<subject type="cpnat:abstract"><name>${escapeXML(t)}</name></subject>`).join('\n    ')}
+    <headline>${escapeXML(dispatch.title || event?.title || 'Depesza')}</headline>
+    ${dispatch.lead ? `<description role="lead">${escapeXML(dispatch.lead)}</description>` : ''}
   </contentMeta>
+  <contentSet>
+    <inlineXML contenttype="application/xhtml+xml">
+      <html xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+          <title>${escapeXML(dispatch.title || event?.title || 'Depesza')}</title>
+        </head>
+        <body>
+          <article>
+            <h1>${escapeXML(dispatch.title || event?.title || 'Depesza')}</h1>
+            ${dispatch.lead ? `<p class="lead">${escapeXML(dispatch.lead)}</p>` : ''}
+            ${dispatch.content ? dispatch.content.split('\n').map(para => 
+              para.trim() ? `<p>${escapeXML(para)}</p>` : ''
+            ).join('\n            ') : '<p></p>'}
+          </article>
+        </body>
+      </html>
+    </inlineXML>
+  </contentSet>
 </newsItem>`;
     };
 
@@ -1132,10 +1171,14 @@
     // Dispatch Review
     const DispatchReview = ({ dispatches, allDispatches, events, onUpdate, onBack, downloadXML }) => {
       const [selectedDispatch, setSelectedDispatch] = useState(null);
+      const [editedTitle, setEditedTitle] = useState('');
+      const [editedLead, setEditedLead] = useState('');
       const [editedContent, setEditedContent] = useState('');
 
       const handleReview = (dispatch) => {
         setSelectedDispatch(dispatch);
+        setEditedTitle(dispatch.title || '');
+        setEditedLead(dispatch.lead || '');
         setEditedContent(dispatch.content || '');
       };
 
@@ -1146,6 +1189,8 @@
                 ...d, 
                 status: 'Zatwierdzona', 
                 editor: 'Edytor',
+                title: editedTitle,
+                lead: editedLead,
                 content: editedContent,
                 modifiedAt: new Date().toISOString()
               }
@@ -1186,6 +1231,26 @@
 
             <div className="grid grid-3">
               <div style={{gridColumn: 'span 2'}}>
+                <div className="form-group">
+                  <label className="label">Tytuł depeszy</label>
+                  <input
+                    type="text"
+                    value={editedTitle}
+                    onChange={(e) => setEditedTitle(e.target.value)}
+                    className="input"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="label">Lead</label>
+                  <textarea
+                    value={editedLead}
+                    onChange={(e) => setEditedLead(e.target.value)}
+                    className="textarea"
+                    rows="2"
+                  />
+                </div>
+
                 <div className="form-group">
                   <h3>Treść depeszy</h3>
                   <textarea
@@ -1326,6 +1391,28 @@
 
             <div className="grid grid-3">
               <div style={{gridColumn: 'span 2'}}>
+                <div className="form-group">
+                  <label className="label">Tytuł depeszy</label>
+                  <input
+                    type="text"
+                    value={selectedDispatch.title || ''}
+                    onChange={(e) => setSelectedDispatch({...selectedDispatch, title: e.target.value})}
+                    className="input"
+                    placeholder="Wprowadź tytuł..."
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="label">Lead (opcjonalny)</label>
+                  <textarea
+                    value={selectedDispatch.lead || ''}
+                    onChange={(e) => setSelectedDispatch({...selectedDispatch, lead: e.target.value})}
+                    className="textarea"
+                    rows="2"
+                    placeholder="Krótkie streszczenie (lead)..."
+                  />
+                </div>
+
                 <div className="form-group">
                   {selectedDispatch.type === 'Pilna' && (
                     <div className="alert alert-danger">
